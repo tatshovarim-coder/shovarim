@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>כלי ימות המשיח</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f9;--ink:#1e293b;--mut:#64748b;--line:#e2e8f0;--card:#fff;--ac:#2563eb;--ac2:#1d4ed8;--acs:#eaf1ff;--soft:#f8fafc}
+*{box-sizing:border-box}html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Heebo,'Segoe UI',Arial,sans-serif}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+header{background:#fff;border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+header p{margin:0;color:var(--mut);font-size:13px;flex:1}
+main{padding:36px 20px}
+.wrap{max-width:820px;margin:0 auto}
+.wrap>h2{margin:0 0 6px;font-size:26px}
+.wrap>p{margin:0 0 24px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+a.tool{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;color:var(--ink);box-shadow:0 1px 3px #0f172a0a;transition:border-color .15s,box-shadow .15s,transform .1s}
+a.tool:hover{border-color:#c3d6fb;box-shadow:0 6px 18px #2563eb1f;transform:translateY(-2px)}
+.ic{width:52px;height:52px;border-radius:12px;background:var(--acs);color:var(--ac2);display:grid;place-items:center}
+.ic svg{width:28px;height:28px}
+a.tool h3{margin:4px 0 0;font-size:18px}
+a.tool p{margin:0;color:var(--mut);font-size:14px;flex:1}
+a.tool .go{margin-top:6px;align-self:flex-start;background:var(--ac);color:#fff;border-radius:7px;padding:8px 16px;font-weight:500}
+a.tool:hover .go{background:var(--ac2)}
+@media(max-width:640px){.grid{grid-template-columns:1fr}main{padding:22px 14px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><h1>כלי ימות המשיח</h1><p>בחרו מה תרצו לעשות</p></header>
+<main>
+  <div class="wrap">
+    <h2>מה תרצו לעשות היום?</h2>
+    <p>בחרו את הכלי המתאים, ותעברו ישר אליו.</p>
+    <div class="grid">
+      <a class="tool" href="yemot-manager.html">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6M14 4l-4 16"/></svg></div>
+        <h3>עריכת שלוחות</h3>
+        <p>מנהל שלוחות: עורכים שלוחות, סניפים והגדרות מייל, ומעתיקים את הקוד המוכן ל-Apps Script.</p>
+        <span class="go">פתיחה</span>
+      </a>
+      <a class="tool" href="list-all-information.html">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6"/></svg></div>
+        <h3>יצירת קובץ ListAllInformation</h3>
+        <p>ממירים אקסל של ת.ז ושמות לקובץ ini מוכן להעלאה לתיקיית EnterID.</p>
+        <span class="go">פתיחה</span>
+      </a>
+    </div>
+  </div>
+</main>
+</body>
+</html>
