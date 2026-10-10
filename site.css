@@ -1,0 +1,28 @@
+/* אפקטים משותפים לכל דפי האתר */
+
+/* מעבר חלק בין דפים (דפדפנים תומכים) */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:.22s ease both vtOut}
+::view-transition-new(root){animation:.38s cubic-bezier(.2,.8,.2,1) both vtIn}
+@keyframes vtOut{to{opacity:0;transform:translateY(-8px)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(12px)}}
+
+/* גיבוי לדפדפנים בלי תמיכה */
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}}
+@supports not (view-transition-name:none){body{animation:pageIn .4s ease both}}
+
+/* פס טעינה עליון בזמן מעבר בין דפים */
+#topbar{position:fixed;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,#2563eb,#60a5fa);transform:scaleX(0);transform-origin:right;z-index:999;pointer-events:none}
+body.leaving #topbar{animation:bar 1.4s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes bar{to{transform:scaleX(.88)}}
+
+/* חלונות קופצים */
+dialog[open]{animation:dlgIn .28s cubic-bezier(.2,.9,.3,1.15)}
+dialog::backdrop{animation:bdIn .25s ease both}
+@keyframes dlgIn{from{opacity:0;transform:translateY(14px) scale(.97)}}
+@keyframes bdIn{from{opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
+}
