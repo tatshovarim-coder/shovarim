@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מנהל שלוחות – ימות המשיח</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+:root{--bg:#f3f5f9;--ink:#1e293b;--mut:#64748b;--line:#e2e8f0;--card:#fff;--ac:#2563eb;--ac2:#1d4ed8;--acs:#eaf1ff;--bad:#dc2626;--soft:#f8fafc;--ok:#15803d}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;color:var(--ink);font:15px/1.45 Heebo,'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;
+  background:radial-gradient(900px 480px at 90% -10%,#dbe7ff 0,transparent 60%),radial-gradient(700px 420px at 0 105%,#e3efff 0,transparent 60%),var(--bg);background-attachment:fixed}
+input:focus,textarea:focus,button:focus-visible,select:focus,a:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+
+/* ---------- כפתורים ---------- */
+:where(button){font:inherit;border:0;border-radius:9px;padding:9px 16px;cursor:pointer;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;box-shadow:0 4px 12px #2563eb2e;transition:transform .15s,box-shadow .2s,background .2s}
+:where(button):hover{transform:translateY(-1px);box-shadow:0 8px 18px #2563eb40}
+:where(button):active{transform:none}
+button.s{background:#e8edf4;color:var(--ink);box-shadow:none}button.s:hover{background:#dbe3ed;box-shadow:none}
+button.d{background:none;color:var(--bad);box-shadow:none}button.d:hover{background:#fee9e9;box-shadow:none;transform:none}
+a.btn{font:inherit;border-radius:9px;padding:9px 16px;text-decoration:none;display:inline-block;transition:background .2s}
+a.btn.s{background:#e8edf4;color:var(--ink)}a.btn.s:hover{background:#dbe3ed}
+
+/* ---------- כותרת עליונה ---------- */
+header{position:relative;z-index:20;background:#ffffffcc;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{margin:0;font-size:19px}
+.sp{flex:1}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--mut);text-decoration:none;padding:6px 10px;border-radius:8px;font-size:14px;transition:background .15s,color .15s}
+.back:hover{background:var(--acs);color:var(--ac2)}
+.back svg{width:16px;height:16px;transform:scaleX(-1)}
+.saved{font-size:12.5px;color:var(--ok);opacity:0;transform:translateY(3px);transition:opacity .25s,transform .25s}
+.saved.on{opacity:1;transform:none}
+.hbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:7px 14px;cursor:pointer;text-decoration:none;font:inherit;box-shadow:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+.hbtn:hover{border-color:#b7cffa;box-shadow:0 4px 12px #2563eb1a;transform:translateY(-1px)}
+.hbtn svg{width:17px;height:17px;color:var(--ac)}
+.hbtn.pri{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 4px 12px #2563eb33}
+.hbtn.pri svg{color:#fff}
+
+/* ---------- מבנה ---------- */
+.app{flex:1;display:grid;grid-template-columns:290px 1fr;min-height:0}
+#main{padding:22px 26px 28px;overflow:auto}
+#main.swap .wrap{animation:rise .35s cubic-bezier(.2,.8,.2,1) both}
+.wrap{max-width:1100px;margin:0 auto}
+
+/* ---------- סרגל צד ---------- */
+#side{background:#ffffffd9;border-left:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.nav{display:flex;align-items:center;gap:11px;width:100%;text-align:right;background:none;color:var(--ink);padding:9px 10px;border-radius:12px;border:1px solid transparent;box-shadow:none;transition:background .15s,border-color .15s}
+.nav:hover{background:var(--soft);box-shadow:none;transform:none}
+.nav.on{background:var(--acs);border-color:#c3d6fb;color:var(--ac2)}
+.nav .t{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.nav .t strong{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav .t em{font-style:normal;font-size:12px;color:var(--mut)}
+.nav.on .t em{color:#5b7fcf}
+.nav b{background:#e8edf4;color:var(--ink);border-radius:9px;min-width:40px;height:36px;display:grid;place-items:center;font-size:14px;flex:none;transition:background .15s,color .15s}
+.nav.on b{background:var(--ac);color:#fff}
+.nav svg{width:22px;height:22px;flex:none;color:var(--mut);margin:0 9px}
+.nav.on svg{color:var(--ac)}
+.sh{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--mut);font-weight:500;margin:12px 6px 2px}
+.cnt{font-style:normal;background:#e8edf4;border-radius:99px;padding:0 9px;color:var(--ink)}
+.list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px;padding:2px}
+.add{border:1.5px dashed #93b4f5;background:none;color:var(--ac2);border-radius:12px;padding:10px;box-shadow:none}
+.add:hover{background:var(--acs);box-shadow:none;transform:none}
+.sfoot{border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.nav.codebtn{background:linear-gradient(135deg,#1e293b,#334155);color:#fff}
+.nav.codebtn:hover{background:linear-gradient(135deg,#273449,#3d4b61)}
+.nav.codebtn svg{color:#93c5fd}
+.nav.codebtn .t em{color:#cbd5e1}
+.nav.codebtn.on{border-color:#60a5fa}
+.dot,.okd{width:10px;height:10px;border-radius:50%;flex:none}
+.dot{background:var(--bad)}.okd{background:#4ade80}
+
+/* ---------- כותרות עמוד וכרטיסים ---------- */
+.ph{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.ph .grow{flex:1;min-width:0}
+.ph h2{margin:0;font-size:24px}
+.ph .sub{margin:2px 0 0;color:var(--mut);font-size:14px}
+.bigid{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--ac),#4f8cff);color:#fff;display:grid;place-items:center;font-size:20px;font-weight:700;box-shadow:0 8px 20px #2563eb40;flex:none}
+.pill{border-radius:99px;padding:4px 14px;font-size:13px;font-weight:700}
+.pill.ok{background:#e3f6ec;color:var(--ok)}.pill.bad{background:#fee9e9;color:var(--bad)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 6px 20px #0f172a0a}
+.card h3{margin:0 0 12px;font-size:16px}
+.card h3+.hint{margin:-6px 0 14px}
+.hint{color:var(--mut);font-size:13px;margin:0 0 14px}
+.side2{position:sticky;top:0}
+
+/* ---------- שדות ---------- */
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g.f{grid-template-columns:110px 1fr 1.4fr}
+label.l{display:block;font-size:13px;font-weight:500;color:var(--mut);margin:0 0 5px}
+.fh{display:block;color:var(--mut);font-size:12.5px;margin-top:4px}
+input[type=text],textarea{width:100%;height:42px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;color:var(--ink);transition:border-color .15s,box-shadow .15s}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px #2563eb22}
+textarea{height:auto;min-height:90px;resize:vertical}
+.br{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.br b{width:36px;height:36px;border-radius:9px;background:#e8edf4;color:var(--ink);display:grid;place-items:center;flex:none}
+.emptyb{border:1.5px dashed var(--line);border-radius:10px;padding:14px;text-align:center;color:var(--mut);background:var(--soft);margin-bottom:10px;font-size:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.seg button{background:#fff;color:var(--ink);border-radius:0;padding:8px 16px;box-shadow:none}
+.seg button:hover{background:var(--soft);box-shadow:none;transform:none}
+.seg button.on{background:var(--ac);color:#fff}
+
+/* ---------- מסלול שיחה ---------- */
+.steps{margin:0;padding:0;list-style:none}
+.steps li{position:relative;padding:0 26px 14px 0;font-size:14px}
+.steps li:before{content:"";position:absolute;right:6px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--ac)}
+.steps li:after{content:"";position:absolute;right:10px;top:18px;bottom:0;width:2px;background:var(--line)}
+.steps li:last-child{padding-bottom:0}.steps li:last-child:after{display:none}
+.steps small{display:block;color:var(--mut)}
+.chip{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:0 7px;margin:1px}
+
+/* ---------- תצוגת מייל ---------- */
+.pv{background:#f8f9fa;border-radius:10px;padding:12px;font-size:13px;color:#333;border:1px solid var(--line)}
+.pv .sub{font-weight:700;margin-bottom:8px;font-size:13px}
+.pv .box{background:#fff;border:1px solid #e9ecef;border-radius:8px;padding:14px}
+.pv h4{margin:0 0 8px;border-bottom:2px solid #0d6efd;padding-bottom:6px;font-size:15px}
+.pv .in{background:#f8f9fa;border-radius:6px;padding:8px;margin:8px 0}
+.pv .in div{margin:3px 0}.pv .in span{color:#6c757d}
+
+/* ---------- עמוד הקוד ---------- */
+.err{color:var(--bad);margin:0 0 6px}
+.cv{display:flex;flex-direction:column;height:calc(100vh - 128px);min-height:420px}
+.errs{padding:10px 14px;margin-bottom:10px;max-height:110px;overflow:auto}
+.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.ed{flex:1;min-height:0;overflow:auto;direction:ltr;text-align:left;background:#0f172a;border-radius:14px;outline:none;box-shadow:0 10px 30px #0f172a22}
+.ed:focus-visible{outline:2px solid var(--ac)}
+#code{margin:0;padding:12px 0;counter-reset:l;font-family:Consolas,'Courier New',monospace;font-size:var(--fz,13px);line-height:1.65;color:#dbe4f0;white-space:pre;min-width:max-content;tab-size:2}
+#code .l{counter-increment:l}
+#code .l:before{content:counter(l);display:inline-block;box-sizing:border-box;position:sticky;left:0;width:56px;margin-right:16px;padding-right:12px;text-align:right;color:#64748b;background:#0b1220;user-select:none}
+.k{color:#c4a1ff}.s{color:#9bd38d;unicode-bidi:isolate}.c{color:#7b8aa0;font-style:italic}.n{color:#f2b37a}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+/* ---------- חלון טעינה והודעות ---------- */
+.drop{border:2px dashed var(--ac);border-radius:12px;padding:20px;text-align:center;color:var(--ac2);cursor:pointer;background:var(--acs);margin-bottom:12px;transition:background .15s}
+.drop:hover{background:#dde8ff}
+.drop.on{background:#d6e4fd}
+dialog{border:0;border-radius:20px;padding:22px;width:min(560px,92vw);box-shadow:0 30px 80px #0f172a55;color:var(--ink)}
+dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
+.dh{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.dh h2{margin:0;font-size:19px;flex:1}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;display:none;z-index:99;box-shadow:0 10px 30px #0f172a44;animation:toastIn .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,16px)}}
+
+/* ---------- מסכים צרים ---------- */
+@media(max-width:900px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  #side{flex-direction:row;align-items:center;overflow-x:auto;border-left:0;border-bottom:1px solid var(--line);padding:8px 10px;gap:6px}
+  .list{flex-direction:row;flex:none;overflow:visible}
+  .nav{width:auto;white-space:nowrap}
+  .nav .t em,.sh{display:none}
+  .sfoot{border-top:0;padding-top:0;margin:0}
+  .add{white-space:nowrap}
+  .cols{grid-template-columns:1fr}.side2{position:static}
+  .g.f{grid-template-columns:1fr}
+  #main{padding:16px 14px 28px}
+  .hbtn span{display:none}.hbtn{padding:8px 10px}
+}
+</style></head><body>
+<div id="topbar"></div>
+<header>
+  <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>תפריט</a>
+  <h1>מנהל שלוחות</h1>
+  <span class="saved" id="saved">✓ נשמר אוטומטית</span>
+  <span class="sp"></span>
+  <a class="hbtn" href="https://script.google.com/u/0/home/projects/1_dhWawgaBBbYj67bjAcouNAAnLiM7LIJaU2wIplf4GUVwwRuzqwH7AZm/edit" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span>פתיחת הסקריפט</span></a>
+  <button class="hbtn" onclick="$('dlg').showModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg><span>טעינת קוד</span></button>
+  <button class="hbtn pri" onclick="copyCode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span>העתקת הקוד</span></button>
+</header>
+<div class="app"><nav id="side"></nav><main id="main"></main></div>
+<dialog id="dlg"><div class="dh"><h2>טעינת הקוד הנוכחי</h2><a class="btn s" href="https://script.google.com/u/0/home/projects/1_dhWawgaBBbYj67bjAcouNAAnLiM7LIJaU2wIplf4GUVwwRuzqwH7AZm/edit" target="_blank" rel="noopener">פתיחת הסקריפט להעתקה</a></div>
+<p class="hint">יש כבר קוד ב‑Apps Script? טענו אותו כאן כדי להמשיך מאותה נקודה.</p>
+<div class="drop" id="drop">גררו לכאן את קובץ הקוד או לחצו לבחירה<input type="file" id="file" hidden></div>
+<label class="l">או הדביקו את הקוד כאן</label><textarea id="paste" placeholder="הדביקו את הקוד מ‑Apps Script"></textarea>
+<div class="row"><button id="load">טען קוד</button><button class="s" id="demo">התחל מהתצורה הנוכחית</button><button class="s" onclick="$('dlg').close()">סגירה</button></div></dialog>
+<div id="toast"></div>
+<script src="site.js"></script>
+<script type="text/plain" id="tpl">// ===== הגדרות (נוצר ע"י מנהל השלוחות – אפשר לטעון קוד זה שוב לכלי) =====
+/*CONFIG_START*/
+var CONFIG = __CONFIG__;
+/*CONFIG_END*/
+
+function doGet(e) { return handleRequest(e); }
+function doPost(e) { return handleRequest(e); }
+
+function out(t) {
+  return ContentService.createTextOutput(t).setMimeType(ContentService.MimeType.TEXT);
+}
+
+function handleRequest(e) {
+  if (!e || !e.parameter) return out("Error: No parameters provided.");
+
+  // נרמול: אם מגיע "/02" או "/x/02" לוקחים רק את החלק האחרון
+  var apiExtension = String(e.parameter.ApiExtension || "").replace(/^.*\//, "");
+  var apiPhone = e.parameter.ApiPhone || "לא זוהה מספר";
+  var apiCallId = e.parameter.ApiCallId || "לא צורף מזהה";
+  var apiName = e.parameter.ApiEnterIDName || "";
+
+  var ext = null;
+  for (var k = 0; k < CONFIG.extensions.length; k++) {
+    if (String(CONFIG.extensions[k].id) === apiExtension) ext = CONFIG.extensions[k];
+  }
+  if (!ext) return out("id_list_message=t-השלוחה אינה מורשית&go_to_folder=hangup");
+
+  // בחירת סניף (רק לשלוחה שהוגדרו לה סניפים)
+  var branchName = null;
+  if (ext.branches && ext.branches.length) {
+    var bc = parseInt(e.parameter.BranchChoice, 10);
+    if (bc >= 1 && bc <= ext.branches.length) branchName = ext.branches[bc - 1];
+    if (!branchName) {
+      var txt = "אנא בחר סניף להנפקת השובר";
+      var keys = [];
+      for (var b = 0; b < ext.branches.length; b++) {
+        txt += " לסניף " + ext.branches[b] + " הקש " + (b + 1);
+        keys.push(b + 1);
+      }
+      return out("read=t-" + txt + "=BranchChoice,no,1,1,7,NO,yes,yes,,"+ keys.join(".") + ",,,,,no");
+    }
+  }
+
+  var userChoice = null;
+  var nextIndex = 1;
+  for (var i = 1; i <= 20; i++) {
+    var key = (i === 1) ? "MenuChoice" : "MenuChoice" + i;
+    if (e.parameter[key]) { userChoice = e.parameter[key]; nextIndex = i + 1; }
+  }
+  var nextChoiceVar = (nextIndex === 1) ? "MenuChoice" : "MenuChoice" + nextIndex;
+
+  // תפריט סיום: מקובץ 000.wav בשלוחה, או הקראה מהקוד
+  var readMenu = (ext.audio ? "read=f-000=" : "read=t-" + ext.menuText + "=") + nextChoiceVar + ",no,1,1,7,NO,yes,yes,,1.2.3,,,,,no";
+
+  if (userChoice === '1') return out(readMenu);
+  if (userChoice === '2') return out("id_list_message=t-שלום ולהתראות&go_to_folder=hangup");
+  if (userChoice === '3') return out("id_list_message=t-אנא המתן&go_to_folder=" + ext.transfer);
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    var cache = CacheService.getScriptCache();
+    var propertyKey = "processed_" + apiExtension + "_" + apiCallId;
+    if (cache.get(propertyKey)) return out(readMenu);
+    sendEmail(ext, apiPhone, branchName, apiName);
+    cache.put(propertyKey, "true", 21600);
+    return out(readMenu);
+  } catch (error) {
+    console.error(error);
+    return out("id_list_message=t-שגיאה בשליחת המייל&go_to_folder=hangup");
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function row(label, val, big) {
+  return '<div style="margin-bottom: 12px; font-size: 16px;"><span style="color: #6c757d; font-weight: 500;">' + label + ':</span> ' +
+    '<strong style="color: #212529;' + (big ? ' font-size: 18px;' : '') + ' padding-right: 8px;">' + esc(val) + '</strong></div>';
+}
+
+function sendEmail(ext, phone, branch, name) {
+  var now = new Date();
+  var datePart = Utilities.formatDate(now, "Asia/Jerusalem", "dd/MM/yyyy");
+  var timePart = Utilities.formatDate(now, "Asia/Jerusalem", "HH:mm:ss");
+
+  var subject = 'אישור שובר - ' + ext.store + (branch ? ' | סניף ' + branch : '') + ' | טלפון: ' + phone +
+    (CONFIG.suffix ? ' | ' + CONFIG.suffix : '') + ' | ' + timePart;
+
+  var htmlBody =
+    '<div dir="rtl" style="font-family: \'Heebo\', \'Segoe UI\', Arial, sans-serif; background-color: #f8f9fa; padding: 40px 15px; color: #333333; text-align: right;">' +
+      '<div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 35px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef;">' +
+        '<div style="border-bottom: 2px solid #0d6efd; padding-bottom: 15px; margin-bottom: 25px;">' +
+          '<h2 style="color: #212529; margin: 0; font-size: 22px; font-weight: 600;">' + esc(CONFIG.heading) + '</h2>' +
+        '</div>' +
+        '<p style="font-size: 16px; color: #495057; margin-bottom: 20px;">שלום וברכה,<br>התקבל אישור רכישת שובר במערכת.</p>' +
+        (ext.note ? '<p style="font-size: 15px; color: #495057; margin-bottom: 20px;">' + esc(ext.note) + '</p>' : '') +
+        '<div style="background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin-bottom: 25px;">' +
+          (name ? row('שם הלקוח', name) : '') +
+          row('טלפון הלקוח', phone, true) +
+          row('זכאות', ext.eligibility) +
+          (branch ? row('סניף', branch) : '') +
+          row('תאריך', datePart + ' | ' + getHebrewDate(now)) +
+          row('שעה', timePart) +
+        '</div>' +
+        '<div style="border-top: 1px solid #e9ecef; padding-top: 20px; font-size: 14px; color: #6c757d; line-height: 1.5;">' +
+          'בברכה,<br><strong style="color: #495057;">' + esc(CONFIG.footer) + '</strong>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var mail = { to: ext.email, subject: subject, htmlBody: htmlBody };
+  if (CONFIG.copyEmail) mail.bcc = CONFIG.copyEmail;
+  MailApp.sendEmail(mail);
+}
+
+// ===== תאריך עברי =====
+function getHebrewDate(date) {
+  var y = parseInt(Utilities.formatDate(date, "Asia/Jerusalem", "yyyy"), 10);
+  var m = parseInt(Utilities.formatDate(date, "Asia/Jerusalem", "MM"), 10);
+  var d = parseInt(Utilities.formatDate(date, "Asia/Jerusalem", "dd"), 10);
+  var rd = Math.floor(Date.UTC(y, m - 1, d) / 86400000) + 719163;
+  var hy = Math.floor((rd + 1373427) / 365.2468) + 1;
+  while (hebNewYear(hy) > rd) hy--;
+  while (hebNewYear(hy + 1) <= rd) hy++;
+  var dayIndex = rd - hebNewYear(hy);
+  var yearLength = hebNewYear(hy + 1) - hebNewYear(hy);
+  var leap = ((7 * hy + 1) % 19) < 7;
+  var months = [
+    { n: 'תשרי', l: 30 },
+    { n: 'חשוון', l: (yearLength % 10 === 5) ? 30 : 29 },
+    { n: 'כסלו', l: (yearLength % 10 === 3) ? 29 : 30 },
+    { n: 'טבת', l: 29 }, { n: 'שבט', l: 30 }
+  ];
+  if (leap) { months.push({ n: 'אדר א׳', l: 30 }); months.push({ n: 'אדר ב׳', l: 29 }); }
+  else { months.push({ n: 'אדר', l: 29 }); }
+  months.push({ n: 'ניסן', l: 30 }, { n: 'אייר', l: 29 }, { n: 'סיוון', l: 30 },
+              { n: 'תמוז', l: 29 }, { n: 'אב', l: 30 }, { n: 'אלול', l: 29 });
+  var idx = 0;
+  while (idx < months.length - 1 && dayIndex >= months[idx].l) { dayIndex -= months[idx].l; idx++; }
+  return hebGematria(dayIndex + 1) + ' ' + months[idx].n + ' ' + hebGematria(hy % 1000);
+}
+
+function hebElapsedDays(year) {
+  var monthsElapsed = Math.floor((235 * year - 234) / 19);
+  var partsElapsed = 12084 + 13753 * monthsElapsed;
+  var days = 29 * monthsElapsed + Math.floor(partsElapsed / 25920);
+  if ((3 * (days + 1)) % 7 < 3) days++;
+  return days;
+}
+
+function hebNewYear(year) {
+  var e = hebElapsedDays(year), next = hebElapsedDays(year + 1), prev = hebElapsedDays(year - 1);
+  var delay = 0;
+  if (next - e === 356) delay = 2; else if (e - prev === 382) delay = 1;
+  return -1373427 + e + delay;
+}
+
+function hebGematria(num) {
+  var ones = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+  var tens = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+  var hundreds = ['', 'ק', 'ר', 'ש'];
+  var s = '';
+  while (num >= 400) { s += 'ת'; num -= 400; }
+  if (num >= 100) { s += hundreds[Math.floor(num / 100)]; num = num % 100; }
+  if (num === 15) s += 'טו'; else if (num === 16) s += 'טז';
+  else s += tens[Math.floor(num / 10)] + ones[num % 10];
+  return (s.length > 1) ? s.slice(0, -1) + '"' + s.slice(-1) : s + "'";
+}
+</script>
+<script>
+var MENU="העיסקה אושרה ונשלח אישור במייל למוכר אנא פנה למוכר למימוש ההטבה לשמיעת ההודעה שוב הקש 1 לסיום העיסקה וניתוק השיחה הקש 2 באם המוכר לא קיבל אישור ולמעבר לנציג הקש 3";
+function ext(id,store,email,el,br){return{id:id,store:store,email:email,eligibility:el,note:"",audio:true,menuText:MENU,transfer:"/3",branches:br||[]}}
+function demo(){return{copyEmail:"tat.shovarim@gmail.com",heading:"אישור רכישת שובר",suffix:'ת"ת גרודנא',footer:'ת"ת ישיבת גרודנא - באר יעקב',
+extensions:[ext("19","מנטור","9231GH@GMAIL.COM","אישור תשלום לשובר",["בני ברק","ירושלים","בית שמש"]),ext("02","בגיר","9231GH@GMAIL.COM","אישור לשובר בסיס לחליפת בגיר")]}}
+var cfg=demo(),$=function(i){return document.getElementById(i)};
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function toast(t){var x=$("toast");x.textContent=t;x.style.display="block";setTimeout(function(){x.style.display="none"},2200)}
+
+function parse(code){
+ var m=code.match(/var CONFIG = ([\s\S]*?);\s*\/\*CONFIG_END\*\//);
+ if(m){try{var j=JSON.parse(m[1]);if(j&&j.extensions)return j}catch(x){}}
+ var c=demo();c.extensions=[];
+ var g=function(r){var x=code.match(r);return x?x[1]:null},v;
+ if((v=g(/var EMAIL_COPY\s*=\s*"([^"]*)"/))!==null)c.copyEmail=v;
+ if((v=g(/font-weight: 600;">([^<+']*)<\/h2>/)))c.heading=v;
+ if((v=g(/<strong style="color: #495057;">([^<]*)<\/strong>/)))c.footer=v;
+ if((v=g(/\+ '\s*\|\s*([^'|]+?)\s*\|\s*'\s*\+\s*timePart/)))c.suffix=v;
+ var mt=g(/var menuText = "([^"]*)"/),audio=/read=f-000=/.test(code)&&!mt;
+ var tr=g(/אנא המתן&go_to_folder=([^"]*)"/)||"/3";
+ var stores={},sm=code.match(/var STORE_NAMES = \{([^}]*)\}/),x;
+ if(sm){var r=/'(\w+)':\s*'([^']*)'/g;while(x=r.exec(sm[1]))stores[x[1]]=x[2]}
+ var el=code.match(/var eligibilityText = \(extension === '(\w+)'\) \? "([^"]*)" : "([^"]*)"/);
+ var bi=code.indexOf("var branches"),bOwner=null,bNames=[];
+ if(bi>-1){var pre=code.slice(0,bi),q=/apiExtension === '(\w+)'/g,y;while(y=q.exec(pre))bOwner=y[1];
+  var blk=code.slice(bi,code.indexOf("}",bi)),r3=/'(\d+)':\s*'([^']*)'/g,z;while(z=r3.exec(blk))bNames.push([+z[1],z[2]]);
+  bNames.sort(function(a,b){return a[0]-b[0]});bNames=bNames.map(function(a){return a[1]})}
+ var r2=/var EMAIL_EXT_(\d+)\s*=\s*"([^"]*)"/g;
+ while(x=r2.exec(code)){var id=x[1];if(id.length<2&&code.indexOf("'0"+id+"'")>-1)id="0"+id;
+  var e=ext(id,stores[id]||"",x[2],el?(el[1]===id?el[2]:el[3]):"",id===bOwner?bNames:[]);
+  e.audio=audio;e.menuText=mt||MENU;e.transfer=tr;c.extensions.push(e)}
+ if(!c.extensions.length)throw new Error("לא זוהו שלוחות בקוד");
+ return c}
+
+
+var Utilities={formatDate:function(d,tz,f){var p={};new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d).forEach(function(x){p[x.type]=x.value});return f.replace('yyyy',p.year).replace('MM',p.month).replace('dd',p.day).replace('HH',p.hour).replace('mm',p.minute).replace('ss',p.second)}};
+var T=document.getElementById("tpl").textContent;eval(T.slice(T.indexOf('// ===== תאריך עברי')));
+var sel='g',CODE='',ready=false,_sv;
+function ping(){var s=$("saved");if(!s)return;s.classList.add("on");clearTimeout(_sv);_sv=setTimeout(function(){s.classList.remove("on")},1600)}
+function hdr(){var b=document.querySelector('.bigid');if(!b)return;b.textContent=sel.id||'?';var h=document.querySelector('.ph h2');if(h)h.textContent='שלוחה '+(sel.id||'חדשה');var t=document.querySelector('.ph .sub');if(t)t.textContent=sel.store||'עריכת פרטי השלוחה'}
+function srt(){cfg.extensions.sort(function(a,b){var x=parseInt(a.id,10),y=parseInt(b.id,10);if(isNaN(x))x=1e9;if(isNaN(y))y=1e9;return x-y||String(a.id).localeCompare(String(b.id))})}
+function errors(){var er=[],seen={};cfg.extensions.forEach(function(e,i){var n="שלוחה "+(e.id||"#"+(i+1));
+ if(!e.id)er.push(n+": חסר מספר שלוחה");else if(seen[e.id])er.push(n+": מספר שלוחה כפול");seen[e.id]=1;
+ if(!e.store)er.push(n+": חסר שם חנות");if(!e.email)er.push(n+": חסר מייל נמען");
+ if(e.branches.length>9)er.push(n+": מותרים עד 9 סניפים");if(e.branches.some(function(b){return!b.trim()}))er.push(n+": יש סניף ריק");
+ if(!e.audio&&/[.\-]/.test(e.menuText))er.push(n+": בטקסט התפריט אסור נקודה או מקף")});return er}
+function side(){var er=errors().length,l0=document.querySelector('#side .list'),st=l0?l0.scrollTop:0,
+ h='<button class="nav'+(sel==='g'?' on':'')+'" onclick="go(\'g\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span class="t"><strong>הגדרות כלליות</strong><em>מייל, כותרת וחתימה</em></span></button>'+
+ '<div class="sh"><span>שלוחות</span><i class="cnt">'+cfg.extensions.length+'</i></div><div class="list">';
+ cfg.extensions.forEach(function(e,i){h+='<button class="nav'+(sel===e?' on':'')+'" onclick="go('+i+')"><b>'+esc(e.id||'?')+'</b><span class="t"><strong>'+esc(e.store||'חדשה')+'</strong><em>'+(e.branches.length?e.branches.length+' סניפים':'ללא סניפים')+'</em></span></button>'});
+ h+='</div><button class="add" onclick="addExt()">+ שלוחה חדשה</button><div class="sfoot"><button class="nav codebtn'+(sel==='code'?' on':'')+'" onclick="go(\'code\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg><span class="t"><strong>הקוד המוכן</strong><em>'+(er?er+' שגיאות לתיקון':'תקין, מוכן להעתקה')+'</em></span><i class="'+(er?'dot':'okd')+'"></i></button></div>';
+ $("side").innerHTML=h;var l1=document.querySelector('#side .list');if(l1)l1.scrollTop=st}
+function go(x){sel=typeof x==='number'?cfg.extensions[x]:x;var m=$("main");m.classList.add("swap");side();main();m.scrollTop=0;setTimeout(function(){m.classList.remove("swap")},500)}
+function addExt(){var e=ext("","","","אישור תשלום לשובר");cfg.extensions.push(e);sel=e;gen();main();var f=document.querySelector('#main input');if(f)f.focus()}
+function delExt(){if(!confirm("למחוק את השלוחה?"))return;cfg.extensions.splice(cfg.extensions.indexOf(sel),1);sel='g';gen();main()}
+function G(k,v){cfg[k]=v;gen();if(sel==='g')pv()}
+function S(k,v){sel[k]=v;if(k==='id'||k==='store'){side();hdr()}pv();gen()}
+function B(j,v){sel.branches[j]=v;pv();gen()}
+function ab(){sel.branches.push("");main();gen();var i=document.querySelectorAll('.br input');i[i.length-1].focus()}
+function rb(j){sel.branches.splice(j,1);main();gen()}
+function setAudio(v){sel.audio=v;main();gen()}
+function fld(o,k,l,fn,h){return '<div><label class="l">'+l+'</label><input type="text" value="'+esc(o[k])+'" oninput="'+fn+'(\''+k+'\',this.value)">'+(h?'<span class="fh">'+h+'</span>':'')+'</div>'}
+function main(){var m=$("main"),h;
+ if(sel==='g'){
+  h='<div class="wrap"><div class="ph"><div class="grow"><h2>הגדרות כלליות</h2><p class="sub">נתונים משותפים לכל השלוחות ולכל המיילים</p></div></div><div class="cols"><div><div class="card"><h3>הנתונים המשותפים לכל המיילים</h3><p class="hint">מופיעים בכל מייל שנשלח, מכל שלוחה.</p><div class="g">'+
+   fld(cfg,"copyEmail","מייל לעותק (BCC) – מקבל כל מייל","G")+fld(cfg,"heading","כותרת בתוך המייל","G")+fld(cfg,"suffix","טקסט בנושא המייל (שם המוסד)","G")+fld(cfg,"footer","חתימה בסוף המייל","G")+'</div></div></div>'+
+   '<div class="side2"><div class="card"><h3>תצוגה לדוגמה של המייל</h3><div id="pv"></div></div></div></div></div>'}
+ else if(sel==='code'){
+  var er=errors();
+  h='<div class="wrap cv"><div class="ph"><div class="grow"><h2>הקוד המוכן</h2><p class="sub">מעתיקים ל‑Apps Script ומעדכנים את הפריסה</p></div><span class="pill '+(er.length?'bad':'ok')+'">'+(er.length?'⚠ '+er.length+' שגיאות לתיקון':'✓ הקוד תקין')+'</span></div>'+
+   (er.length?'<div class="card errs">'+er.map(function(x){return '<div class="err">⚠ '+esc(x)+'</div>'}).join('')+'</div>':'')+
+   '<div class="tb"><button id="cpb" onclick="copyCode()">העתקת הקוד</button><button class="s" onclick="dlCode()">הורדה כקובץ</button><a class="btn s" href="https://script.google.com/u/0/home/projects/1_dhWawgaBBbYj67bjAcouNAAnLiM7LIJaU2wIplf4GUVwwRuzqwH7AZm/edit" target="_blank" rel="noopener">פתיחת הסקריפט</a><i style="flex:1"></i><button class="s" onclick="fz(-1)" title="הקטנת כתב">A−</button><button class="s" onclick="fz(1)" title="הגדלת כתב">A+</button></div>'+
+   '<div class="ed" id="ed" tabindex="0"><pre id="code"></pre></div><p class="hint" style="margin:8px 0 0">אחרי ההדבקה ב‑Apps Script: פריסה ← ניהול פריסות ← עריכה ← גרסה חדשה.</p></div>'}
+ else{var e=sel;
+  var br=e.branches.map(function(n,j){return '<div class="br"><b>'+(j+1)+'</b><input type="text" placeholder="שם הסניף" value="'+esc(n)+'" oninput="B('+j+',this.value)"><button class="d" onclick="rb('+j+')">הסר</button></div>'}).join('');
+  h='<div class="wrap"><div class="ph"><div class="bigid">'+esc(e.id||'?')+'</div><div class="grow"><h2>שלוחה '+esc(e.id||'חדשה')+'</h2><p class="sub">'+esc(e.store||'עריכת פרטי השלוחה')+'</p></div><button class="s" onclick="dupExt()">שכפול שלוחה</button><button class="d" onclick="delExt()">מחיקת שלוחה</button></div><div class="cols"><div>'+
+   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="g f">'+fld(e,"id","מספר שלוחה","S","למשל 02")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
+   '<div class="g" style="margin-top:14px">'+fld(e,"eligibility","טקסט זכאות במייל","S")+fld(e,"note","הערה בגוף המייל (לא חובה)","S")+'</div></div>'+
+   '<div class="card"><h3>בחירת סניף</h3><p class="hint">'+(e.branches.length?'הלקוח מקיש את מספר הסניף לפני שליחת המייל.':'אפשר להוסיף סניפים כדי שהלקוח יבחר לפני שליחת המייל.')+'</p>'+br+(e.branches.length?'':'<div class="emptyb">אין סניפים. המייל נשלח מיד.</div>')+'<button class="s" onclick="ab()">+ הוספת סניף</button></div>'+
+   '<div class="card"><h3>תפריט סיום</h3><p class="hint">מה שהלקוח שומע אחרי שהמייל נשלח.</p><div class="seg"><button class="'+(e.audio?'on':'')+'" onclick="setAudio(true)">קובץ 000.wav בשלוחה</button><button class="'+(e.audio?'':'on')+'" onclick="setAudio(false)">טקסט מהקוד</button></div>'+
+   (e.audio?'':'<div style="margin-bottom:12px"><label class="l">טקסט התפריט (בלי נקודה ובלי מקף)</label><textarea oninput="S(\'menuText\',this.value)">'+esc(e.menuText)+'</textarea></div>')+
+   '<div style="max-width:320px">'+fld(e,"transfer","מעבר לנציג בהקשת 3 (נתיב, למשל /3)","S")+'</div></div></div>'+
+   '<div class="side2"><div class="card"><h3>מסלול השיחה</h3><ul class="steps" id="fl"></ul></div><div class="card"><h3>תצוגה לדוגמה של המייל</h3><div id="pv"></div></div></div></div></div>'}
+ m.innerHTML=h;pv();if(sel==='code'){fillCode();$("ed").onkeydown=function(e){if((e.ctrlKey||e.metaKey)&&(e.key==='a'||e.key==='A')){e.preventDefault();var r=document.createRange();r.selectNodeContents($("code"));var g=getSelection();g.removeAllRanges();g.addRange(r)}}}}
+var HR=/(\/\*.*?\*\/)|(^|\s)(\/\/.*)$|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\b(var|function|return|if|else|for|while|try|catch|finally|new|null|true|false|typeof)\b|\b(\d+)\b/g;
+function E(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function hl(t){var o='',last=0,m;HR.lastIndex=0;while((m=HR.exec(t))){o+=E(t.slice(last,m.index));
+ if(m[1])o+='<span class="c">'+E(m[1])+'</span>';else if(m[3])o+=E(m[2])+'<span class="c">'+E(m[3])+'</span>';else if(m[4])o+='<span class="s">'+E(m[4])+'</span>';else if(m[5])o+='<span class="k">'+E(m[5])+'</span>';else o+='<span class="n">'+E(m[6])+'</span>';
+ last=HR.lastIndex}
+ return o+E(t.slice(last))}
+var FZ=13;
+function fillCode(){var c=$("code");c.style.setProperty('--fz',FZ+'px');c.innerHTML=CODE.split("\n").map(function(l){return '<span class="l">'+hl(l)+'</span>'}).join("\n")}
+function fz(d){FZ=Math.max(10,Math.min(22,FZ+d));$("code").style.setProperty('--fz',FZ+'px')}
+function dupExt(){var c=JSON.parse(JSON.stringify(sel));c.id="";c.store="";cfg.extensions.push(c);sel=c;gen();main();var f=document.querySelector('#main input');if(f)f.focus()}
+function pv(){var p=$("pv"),f=$("fl");
+ if(f&&sel!=='g'&&sel!=='code'){var e=sel;f.innerHTML='<li>שיחה נכנסת לשלוחה <b>'+esc(e.id||"?")+'</b></li>'+
+  (e.branches.length?'<li>בחירת סניף<small>'+e.branches.map(function(n,j){return '<span class="chip">'+(j+1)+' – '+esc(n||"?")+'</span>'}).join('')+'</small></li>':'')+
+  '<li>שליחת מייל<small>אל '+esc(e.email||"?")+'</small></li><li>תפריט סיום<small>'+(e.audio?'מושמע מקובץ 000.wav':'מוקרא מהקוד')+'</small><small><span class="chip">1 שמיעה חוזרת</span><span class="chip">2 ניתוק</span><span class="chip">3 נציג '+esc(e.transfer)+'</span></small></li>'}
+ if(!p)return;var x=(sel==='g'||sel==='code')?(cfg.extensions[0]||ext("00","חנות","","זכאות")):sel,b=x.branches[0]||"";
+ var d=new Date(),dt=Utilities.formatDate(d,"Asia/Jerusalem","dd/MM/yyyy"),hd=getHebrewDate(d),tm=Utilities.formatDate(d,"Asia/Jerusalem","HH:mm:ss");
+ p.innerHTML='<div class="pv"><div class="sub">אישור שובר - '+esc(x.store||"חנות")+(b?' | סניף '+esc(b):'')+' | טלפון: 0501234567'+(cfg.suffix?' | '+esc(cfg.suffix):'')+' | '+tm+'</div><div class="box"><h4>'+esc(cfg.heading)+'</h4><div>שלום וברכה,<br>התקבל אישור רכישת שובר במערכת.</div>'+(x.note?'<div style="margin-top:6px">'+esc(x.note)+'</div>':'')+
+  '<div class="in"><div><span>שם הלקוח:</span> <b>ישראל ישראלי</b></div><div><span>טלפון הלקוח:</span> <b>0501234567</b></div><div><span>זכאות:</span> <b>'+esc(x.eligibility)+'</b></div>'+(b?'<div><span>סניף:</span> <b>'+esc(b)+'</b></div>':'')+'<div><span>תאריך:</span> <b>'+dt+' | '+esc(hd)+'</b></div><div><span>שעה:</span> <b>'+tm+'</b></div></div><div style="color:#6c757d">בברכה,<br><b>'+esc(cfg.footer)+'</b></div></div></div>'}
+function gen(){srt();CODE=$("tpl").textContent.replace("__CONFIG__",function(){return JSON.stringify(cfg,null,2)});side();if($("code"))fillCode();try{localStorage.setItem('yemotCfg',JSON.stringify(cfg))}catch(z){}if(ready)ping()}
+function copyCode(){var done=function(){toast("הקוד הועתק");var b=$("cpb");if(b){b.textContent="הועתק ✓";setTimeout(function(){b.textContent="העתקת הקוד"},1600)}};if(navigator.clipboard)navigator.clipboard.writeText(CODE).then(done,function(){fb()});else fb();
+ function fb(){var t=document.createElement("textarea");t.value=CODE;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();done()}}
+function dlCode(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([CODE],{type:"text/javascript"}));a.download="Code.gs";a.click()}
+function load(code){try{cfg=parse(code);sel='g';gen();main();$("dlg").close();toast("נטענו "+cfg.extensions.length+" שלוחות")}catch(x){toast("שגיאה: "+x.message)}}
+$("load").onclick=function(){load($("paste").value)};
+$("demo").onclick=function(){cfg=demo();sel='g';gen();main();$("dlg").close()};
+function rf(f){var r=new FileReader();r.onload=function(){$("paste").value=r.result;load(r.result)};r.readAsText(f)}
+$("drop").onclick=function(){$("file").click()};$("file").onchange=function(){if(this.files[0])rf(this.files[0])};
+$("drop").ondragover=function(e){e.preventDefault();this.classList.add("on")};$("drop").ondragleave=function(){this.classList.remove("on")};
+$("drop").ondrop=function(e){e.preventDefault();this.classList.remove("on");if(e.dataTransfer.files[0])rf(e.dataTransfer.files[0])};
+var sv=null;try{sv=JSON.parse(localStorage.getItem('yemotCfg')||'null')}catch(z){}
+if(sv&&sv.extensions&&sv.extensions.length){cfg=sv;gen();main();toast("נטענה העבודה האחרונה שלך")}else{gen();main();$("dlg").showModal()}
+ready=true;
+</script></body></html>
