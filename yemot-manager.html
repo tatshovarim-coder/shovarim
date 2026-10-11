@@ -328,7 +328,9 @@ function handleRequest(e) {
 
   // תפריט סיום: מקובץ 000.wav בשלוחה, או הקראה מהקוד
   // מעבר לנציג פעיל רק אם הוגדרה שלוחה לנציג. אם השדה ריק, המקש 3 לא מוצע ולא פועל
-  var transferTo = String(ext.transfer || "").trim();
+  // הנתיב חייב להתחיל ב-/ ולכן מוסיפים אותו אוטומטית אם חסר
+  var transferTo = String(ext.transfer || "").trim().replace(/^\/+/, "");
+  if (transferTo) transferTo = "/" + transferTo;
   var menuKeys = transferTo ? "1.2.3" : "1.2";
   var readMenu = (ext.audio ? "read=f-000=" : "read=t-" + ext.menuText + "=") + nextChoiceVar + ",no,1,1,7,NO,yes,yes,," + menuKeys + ",,,,,no";
 
@@ -564,7 +566,7 @@ function dupExt(){var c=JSON.parse(JSON.stringify(sel));c.id="";c.store="";cfg.e
 function pv(){var p=$("pv"),f=$("fl");
  if(f&&sel!=='g'&&sel!=='code'){var e=sel;f.innerHTML='<li>שיחה נכנסת לשלוחה <b>'+esc(e.id||"?")+'</b></li>'+
   (e.branches.length?'<li>בחירת סניף<small>'+e.branches.map(function(n,j){return '<span class="chip">'+(j+1)+' – '+esc(n||"?")+'</span>'}).join('')+'</small></li>':'')+
-  '<li>שליחת מייל<small>אל '+esc(e.email||"?")+'</small></li><li>תפריט סיום<small>'+(e.audio?'מושמע מקובץ 000.wav':'מוקרא מהקוד')+'</small><small><span class="chip">1 שמיעה חוזרת</span><span class="chip">2 ניתוק</span>'+(String(e.transfer||"").trim()?'<span class="chip">3 נציג '+esc(e.transfer)+'</span>':'')+'</small></li>'}
+  '<li>שליחת מייל<small>אל '+esc(e.email||"?")+'</small></li><li>תפריט סיום<small>'+(e.audio?'מושמע מקובץ 000.wav':'מוקרא מהקוד')+'</small><small><span class="chip">1 שמיעה חוזרת</span><span class="chip">2 ניתוק</span>'+(String(e.transfer||"").trim()?'<span class="chip">3 נציג /'+esc(String(e.transfer).trim().replace(/^\/+/,""))+'</span>':'')+'</small></li>'}
  if(!p)return;var x=(sel==='g'||sel==='code')?(cfg.extensions[0]||ext("00","חנות","","זכאות")):sel,b=x.branches[0]||"";
  var d=new Date(),dt=Utilities.formatDate(d,"Asia/Jerusalem","dd/MM/yyyy"),hd=getHebrewDate(d),tm=Utilities.formatDate(d,"Asia/Jerusalem","HH:mm:ss");
  p.innerHTML='<div class="pv"><div class="sub">אישור שובר - '+esc(x.store||"חנות")+(b?' | סניף '+esc(b):'')+' | טלפון: 0501234567'+(cfg.suffix?' | '+esc(cfg.suffix):'')+' | '+tm+'</div><div class="box"><h4>'+esc(cfg.heading)+'</h4><div>שלום וברכה,<br>התקבל אישור רכישת שובר במערכת.</div>'+(x.note?'<div style="margin-top:6px">'+esc(x.note)+'</div>':'')+
