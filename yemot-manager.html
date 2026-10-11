@@ -96,6 +96,7 @@ header h1{margin:0;font-size:19px}
 .g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 .g.f{grid-template-columns:110px 1fr 1.4fr}
 label.l{display:block;font-size:13px;font-weight:500;color:var(--mut);margin:0 0 5px}
+.warn{background:#fff4e5;border:1px solid #f6d9a8;border-radius:10px;padding:10px 14px;font-size:14px;color:#8a4b00}
 .fh{display:block;color:var(--mut);font-size:12.5px;margin-top:4px}
 input[type=text],textarea{width:100%;height:42px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;color:var(--ink);transition:border-color .15s,box-shadow .15s}
 input[type=text]:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px #2563eb22}
@@ -226,7 +227,8 @@ kbd{background:#eef2f7;border:1px solid var(--line);border-bottom-width:2px;bord
 <ol class="st">
 <li><b>בוחרים שלוחה, או מוסיפים חדשה</b><p>ברשימה בצד לוחצים על שלוחה כדי לערוך אותה. לשלוחה חדשה לוחצים <b style="display:inline">"+ שלוחה חדשה"</b>. אם היא דומה לאחת הקיימות, עדיף <b style="display:inline">"שכפול שלוחה"</b>, ואז רק משנים את מה שצריך.</p></li>
 <li><b>ממלאים את הפרטים</b><p>מספר שלוחה, שם החנות (יופיע בנושא המייל), לאיזה מייל לשלוח, ומה לכתוב בשורת הזכאות. אם יש סניפים, לוחצים <b style="display:inline">"+ הוספת סניף"</b> ורושמים אותם לפי הסדר: הראשון הוא מקש 1, השני מקש 2, וכך הלאה (עד 9 סניפים).</p>
-<div class="warn">מספר השלוחה חייב להיות זהה בדיוק לשם השלוחה במערכת הטלפונית. <b>02</b> זה לא <b>2</b>!</div></li>
+<div class="warn">מספר השלוחה חייב להיות זהה בדיוק לשם השלוחה במערכת הטלפונית. <b>02</b> זה לא <b>2</b>! שלוחה בתוך שלוחה כותבים עם סלאש, למשל <b>2/3</b>.</div></li>
+<li><b>קובעים אם יש מעבר לנציג</b><p>בשדה "מעבר לנציג בהקשת 3" כותבים לאן להעביר (למשל <b style="display:inline">/3</b>). אם משאירים אותו ריק, האפשרות מבוטלת והמקש 3 לא פועל.</p></li>
 <li><b>בוחרים איך יישמע תפריט הסיום</b><p>או מקובץ הקלטה בשם <b style="display:inline">000.wav</b> שמעלים לשלוחה (מומלץ), או הקראה מטקסט (בטקסט אסור נקודה ומקף).</p></li>
 <li><b>בודקים שהכול תקין</b><p>בתפריט בצד לוחצים <b style="display:inline">"הקוד המוכן"</b>. אם כתוב <b style="display:inline">"✓ הקוד תקין"</b>, אפשר להמשיך. אם יש שורה אדומה, מתקנים לפי מה שכתוב בה.</p></li>
 </ol>
@@ -276,28 +278,28 @@ function out(t) {
 function handleRequest(e) {
   if (!e || !e.parameter) return out("Error: No parameters provided.");
 
-  // נרמול: מורידים סלאשים מההתחלה ומהסוף. שלוחה רגילה מזוהה לפי החלק האחרון בנתיב,
-  // ושלוחה בתוך שלוחה (nested) מזוהה לפי הנתיב המלא, למשל 2/3
+  // נרמול: מורידים סלאשים מההתחלה ומהסוף.
+  // שלוחה שנכתבה עם / (למשל 2/3) מזוהה לפי הנתיב המלא, ושלוחה רגילה (למשל 02) לפי החלק האחרון בנתיב
   var fullPath = String(e.parameter.ApiExtension || "").replace(/^\/+|\/+$/g, "");
   var apiExtension = fullPath.replace(/^.*\//, "");
+  var ext = null, exactPath = null, plain = null, pathByLast = [];
+  for (var k = 0; k < CONFIG.extensions.length; k++) {
+    var cur = CONFIG.extensions[k], curId = String(cur.id).replace(/^\/+|\/+$/g, "");
+    if (curId.indexOf("/") >= 0) {
+      if (curId === fullPath) exactPath = cur;
+      else if (curId.replace(/^.*\//, "") === apiExtension) pathByLast.push(cur);
+    } else if (curId === apiExtension) plain = cur;
+  }
+  // עדיפות: נתיב מלא, אחר כך שלוחה רגילה, ולבסוף התאמה לפי החלק האחרון (רק אם אין אי-בהירות)
+  ext = exactPath || plain || (pathByLast.length === 1 ? pathByLast[0] : null);
+  if (ext && String(ext.id).indexOf("/") >= 0) {
+    console.log("ApiExtension=" + e.parameter.ApiExtension + " -> " + ext.id);
+    apiExtension = String(ext.id).replace(/^\/+|\/+$/g, "");
+  }
   var apiPhone = e.parameter.ApiPhone || "לא זוהה מספר";
   var apiCallId = e.parameter.ApiCallId || "לא צורף מזהה";
   var apiName = e.parameter.ApiEnterIDName || "";
 
-  var ext = null, nestedByLast = [];
-  for (var k = 0; k < CONFIG.extensions.length; k++) {
-    var cur = CONFIG.extensions[k], curId = String(cur.id).replace(/^\/+|\/+$/g, "");
-    if (cur.nested) {
-      if (curId === fullPath) ext = cur;
-      else if (curId.replace(/^.*\//, "") === apiExtension) nestedByLast.push(cur);
-    } else if (curId === apiExtension) ext = cur;
-  }
-  // אם ימות המשיח שלחה רק את שם השלוחה האחרון, מתאימים לשלוחה מקוננת רק אם אין אי-בהירות
-  if (!ext && nestedByLast.length === 1) ext = nestedByLast[0];
-  if (ext && ext.nested) {
-    console.log("ApiExtension=" + e.parameter.ApiExtension + " -> " + ext.id);
-    apiExtension = String(ext.id).replace(/^\/+|\/+$/g, "");
-  }
   if (!ext) return out("id_list_message=t-השלוחה אינה מורשית&go_to_folder=hangup");
 
   // בחירת סניף (רק לשלוחה שהוגדרו לה סניפים)
@@ -325,11 +327,14 @@ function handleRequest(e) {
   var nextChoiceVar = (nextIndex === 1) ? "MenuChoice" : "MenuChoice" + nextIndex;
 
   // תפריט סיום: מקובץ 000.wav בשלוחה, או הקראה מהקוד
-  var readMenu = (ext.audio ? "read=f-000=" : "read=t-" + ext.menuText + "=") + nextChoiceVar + ",no,1,1,7,NO,yes,yes,,1.2.3,,,,,no";
+  // מעבר לנציג פעיל רק אם הוגדרה שלוחה לנציג. אם השדה ריק, המקש 3 לא מוצע ולא פועל
+  var transferTo = String(ext.transfer || "").trim();
+  var menuKeys = transferTo ? "1.2.3" : "1.2";
+  var readMenu = (ext.audio ? "read=f-000=" : "read=t-" + ext.menuText + "=") + nextChoiceVar + ",no,1,1,7,NO,yes,yes,," + menuKeys + ",,,,,no";
 
   if (userChoice === '1') return out(readMenu);
   if (userChoice === '2') return out("id_list_message=t-שלום ולהתראות&go_to_folder=hangup");
-  if (userChoice === '3') return out("id_list_message=t-אנא המתן&go_to_folder=" + ext.transfer);
+  if (userChoice === '3' && transferTo) return out("id_list_message=t-אנא המתן&go_to_folder=" + transferTo);
 
   var lock = LockService.getScriptLock();
   lock.waitLock(5000);
@@ -448,7 +453,7 @@ function hebGematria(num) {
 </script>
 <script>
 var MENU="העיסקה אושרה ונשלח אישור במייל למוכר אנא פנה למוכר למימוש ההטבה לשמיעת ההודעה שוב הקש 1 לסיום העיסקה וניתוק השיחה הקש 2 באם המוכר לא קיבל אישור ולמעבר לנציג הקש 3";
-function ext(id,store,email,el,br){return{id:id,store:store,email:email,eligibility:el,note:"",audio:true,menuText:MENU,transfer:"/3",nested:false,branches:br||[]}}
+function ext(id,store,email,el,br){return{id:id,store:store,email:email,eligibility:el,note:"",audio:true,menuText:MENU,transfer:"/3",branches:br||[]}}
 function demo(){return{copyEmail:"tat.shovarim@gmail.com",heading:"אישור רכישת שובר",suffix:'ת"ת גרודנא',footer:'ת"ת ישיבת גרודנא - באר יעקב',
 extensions:[ext("19","מנטור","9231GH@GMAIL.COM","אישור תשלום לשובר",["בני ברק","ירושלים","בית שמש"]),ext("02","בגיר","9231GH@GMAIL.COM","אישור לשובר בסיס לחליפת בגיר")]}}
 var cfg=demo(),$=function(i){return document.getElementById(i)};
@@ -486,7 +491,10 @@ var T=document.getElementById("tpl").textContent;eval(T.slice(T.indexOf('// ====
 var sel='g',CODE='',ready=false,_sv,BASE=null;
 function lsg(k){try{return localStorage.getItem(k)}catch(z){return null}}
 function lss(k,v){try{localStorage.setItem(k,v)}catch(z){}}
-function dirty(){return BASE!==CODE}
+/* משווים רק את ההגדרות (CONFIG) ולא את כל טקסט הקוד, כדי ששינוי בתבנית לא יסמן "שינויים שלא הועתקו" בכל כניסה */
+function cfgKey(c){try{c=JSON.parse(JSON.stringify(c));c.extensions.forEach(function(e){delete e.nested});return JSON.stringify(c)}catch(z){return null}}
+function baseKey(code){var m=String(code).match(/var CONFIG = ([\s\S]*?);\s*\/\*CONFIG_END\*\//);if(!m)return null;try{return cfgKey(JSON.parse(m[1]))}catch(z){return null}}
+function dirty(){if(BASE===null||BASE==='')return false;var b=baseKey(BASE),c=cfgKey(cfg);if(b===null||c===null)return BASE!==CODE;return b!==c}
 function upd(){var d=$("dirty");if(d)d.classList.toggle("on",dirty())}
 function setBase(){BASE=CODE;lss('yemotBase',CODE);rSet('base',CODE);upd();side()}
 function hist(){try{return JSON.parse(lsg('yemotHist')||'[]')}catch(z){return []}}
@@ -499,8 +507,6 @@ function hdr(){var b=document.querySelector('.bigid');if(!b)return;b.textContent
 function srt(){cfg.extensions.sort(function(a,b){var x=parseInt(a.id,10),y=parseInt(b.id,10);if(isNaN(x))x=1e9;if(isNaN(y))y=1e9;return x-y||String(a.id).localeCompare(String(b.id))})}
 function errors(){var er=[],seen={};cfg.extensions.forEach(function(e,i){var n="שלוחה "+(e.id||"#"+(i+1));
  if(!e.id)er.push(n+": חסר מספר שלוחה");else if(seen[e.id])er.push(n+": מספר שלוחה כפול");seen[e.id]=1;
- if(e.id&&e.nested&&String(e.id).replace(/^\/+|\/+$/g,"").indexOf("/")<0)er.push(n+": שלוחה בתוך שלוחה דורשת נתיב עם / (למשל 2/3)");
- if(e.id&&!e.nested&&/\//.test(e.id))er.push(n+": יש / במספר השלוחה – סמנו 'שלוחה בתוך שלוחה'");
  if(!e.store)er.push(n+": חסר שם חנות");if(!e.email)er.push(n+": חסר מייל נמען");
  if(e.branches.length>9)er.push(n+": מותרים עד 9 סניפים");if(e.branches.some(function(b){return!b.trim()}))er.push(n+": יש סניף ריק");
  if(!e.audio&&/[.\-]/.test(e.menuText))er.push(n+": בטקסט התפריט אסור נקודה או מקף")});return er}
@@ -518,7 +524,6 @@ function S(k,v){sel[k]=v;if(k==='id'||k==='store'){side();hdr()}pv();gen()}
 function B(j,v){sel.branches[j]=v;pv();gen()}
 function ab(){sel.branches.push("");main();gen();var i=document.querySelectorAll('.br input');i[i.length-1].focus()}
 function rb(j){sel.branches.splice(j,1);main();gen()}
-function setNested(v){sel.nested=v;main();gen()}
 function setAudio(v){sel.audio=v;main();gen()}
 function fld(o,k,l,fn,h){return '<div><label class="l">'+l+'</label><input type="text" value="'+esc(o[k])+'" oninput="'+fn+'(\''+k+'\',this.value)">'+(h?'<span class="fh">'+h+'</span>':'')+'</div>'}
 function main(){var m=$("main"),h;
@@ -535,12 +540,12 @@ function main(){var m=$("main"),h;
  else{var e=sel;
   var br=e.branches.map(function(n,j){return '<div class="br"><b>'+(j+1)+'</b><input type="text" placeholder="שם הסניף" value="'+esc(n)+'" oninput="B('+j+',this.value)"><button class="d" onclick="rb('+j+')">הסר</button></div>'}).join('');
   h='<div class="wrap"><div class="ph"><div class="bigid">'+esc(e.id||'?')+'</div><div class="grow"><h2>שלוחה '+esc(e.id||'חדשה')+'</h2><p class="sub">'+esc(e.store||'עריכת פרטי השלוחה')+'</p></div><button class="s" onclick="dupExt()">שכפול שלוחה</button><button class="d" onclick="delExt()">מחיקת שלוחה</button></div><div class="cols"><div>'+
-   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="g f">'+fld(e,"id","מספר שלוחה","S",e.nested?"נתיב מלא, למשל 2/3":"למשל 02")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
-   '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer"><input type="checkbox"'+(e.nested?' checked':'')+' onchange="setNested(this.checked)"> שלוחה בתוך שלוחה (הנתיב המלא, למשל 2/3)</label>'+(e.nested?'<p class="hint" style="margin:6px 0 0">בשלוחה כזו כותבים את הנתיב המלא במספר השלוחה. בכל שיחה נרשם בלוג של Apps Script מה ימות המשיח שלחה (ביצועים ← ApiExtension).</p>':'')+'<div class="g" style="margin-top:14px">'+fld(e,"eligibility","טקסט זכאות במייל","S")+fld(e,"note","הערה בגוף המייל (לא חובה)","S")+'</div></div>'+
+   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="warn" style="margin:0 0 14px"><b>חשוב:</b> כותבים את מספר השלוחה בדיוק כמו שהוא במערכת הטלפונית, ממש תו-תו. <b>5</b> זה לא <b>05</b>, ושלוחה בתוך שלוחה נכתבת עם סלאש, למשל <b>2/3</b>.</div><div class="g f">'+fld(e,"id","מספר שלוחה","S","בדיוק כמו בימות המשיח: 5 או 05, ואם זו שלוחה בתוך שלוחה אז 2/3")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
+   '<div class="g" style="margin-top:14px">'+fld(e,"eligibility","טקסט זכאות במייל","S")+fld(e,"note","הערה בגוף המייל (לא חובה)","S")+'</div></div>'+
    '<div class="card"><h3>בחירת סניף</h3><p class="hint">'+(e.branches.length?'הלקוח מקיש את מספר הסניף לפני שליחת המייל.':'אפשר להוסיף סניפים כדי שהלקוח יבחר לפני שליחת המייל.')+'</p>'+br+(e.branches.length?'':'<div class="emptyb">אין סניפים. המייל נשלח מיד.</div>')+'<button class="s" onclick="ab()">+ הוספת סניף</button></div>'+
    '<div class="card"><h3>תפריט סיום</h3><p class="hint">מה שהלקוח שומע אחרי שהמייל נשלח.</p><div class="seg"><button class="'+(e.audio?'on':'')+'" onclick="setAudio(true)">קובץ 000.wav בשלוחה</button><button class="'+(e.audio?'':'on')+'" onclick="setAudio(false)">טקסט מהקוד</button></div>'+
    (e.audio?'':'<div style="margin-bottom:12px"><label class="l">טקסט התפריט (בלי נקודה ובלי מקף)</label><textarea oninput="S(\'menuText\',this.value)">'+esc(e.menuText)+'</textarea></div>')+
-   '<div style="max-width:320px">'+fld(e,"transfer","מעבר לנציג בהקשת 3 (נתיב, למשל /3)","S")+'</div></div></div>'+
+   '<div style="max-width:320px">'+fld(e,"transfer","מעבר לנציג בהקשת 3 (נתיב, למשל /3)","S","השאירו ריק כדי לבטל את האפשרות – המקש 3 לא יופיע ולא יעבוד. (אם תפריט הסיום מוקלט בקובץ, ודאו שההקלטה לא מציעה הקשה על 3)")+'</div></div></div>'+
    '<div class="side2"><div class="card"><h3>מסלול השיחה</h3><ul class="steps" id="fl"></ul></div><div class="card"><h3>תצוגה לדוגמה של המייל</h3><div id="pv"></div></div></div></div></div>'}
  m.innerHTML=h;pv();if(sel==='code'){fillCode();$("ed").onkeydown=function(e){if((e.ctrlKey||e.metaKey)&&(e.key==='a'||e.key==='A')){e.preventDefault();var r=document.createRange();r.selectNodeContents($("code"));var g=getSelection();g.removeAllRanges();g.addRange(r)}}}}
 var HR=/(\/\*.*?\*\/)|(^|\s)(\/\/.*)$|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\b(var|function|return|if|else|for|while|try|catch|finally|new|null|true|false|typeof)\b|\b(\d+)\b/g;
@@ -556,7 +561,7 @@ function dupExt(){var c=JSON.parse(JSON.stringify(sel));c.id="";c.store="";cfg.e
 function pv(){var p=$("pv"),f=$("fl");
  if(f&&sel!=='g'&&sel!=='code'){var e=sel;f.innerHTML='<li>שיחה נכנסת לשלוחה <b>'+esc(e.id||"?")+'</b></li>'+
   (e.branches.length?'<li>בחירת סניף<small>'+e.branches.map(function(n,j){return '<span class="chip">'+(j+1)+' – '+esc(n||"?")+'</span>'}).join('')+'</small></li>':'')+
-  '<li>שליחת מייל<small>אל '+esc(e.email||"?")+'</small></li><li>תפריט סיום<small>'+(e.audio?'מושמע מקובץ 000.wav':'מוקרא מהקוד')+'</small><small><span class="chip">1 שמיעה חוזרת</span><span class="chip">2 ניתוק</span><span class="chip">3 נציג '+esc(e.transfer)+'</span></small></li>'}
+  '<li>שליחת מייל<small>אל '+esc(e.email||"?")+'</small></li><li>תפריט סיום<small>'+(e.audio?'מושמע מקובץ 000.wav':'מוקרא מהקוד')+'</small><small><span class="chip">1 שמיעה חוזרת</span><span class="chip">2 ניתוק</span>'+(String(e.transfer||"").trim()?'<span class="chip">3 נציג '+esc(e.transfer)+'</span>':'')+'</small></li>'}
  if(!p)return;var x=(sel==='g'||sel==='code')?(cfg.extensions[0]||ext("00","חנות","","זכאות")):sel,b=x.branches[0]||"";
  var d=new Date(),dt=Utilities.formatDate(d,"Asia/Jerusalem","dd/MM/yyyy"),hd=getHebrewDate(d),tm=Utilities.formatDate(d,"Asia/Jerusalem","HH:mm:ss");
  p.innerHTML='<div class="pv"><div class="sub">אישור שובר - '+esc(x.store||"חנות")+(b?' | סניף '+esc(b):'')+' | טלפון: 0501234567'+(cfg.suffix?' | '+esc(cfg.suffix):'')+' | '+tm+'</div><div class="box"><h4>'+esc(cfg.heading)+'</h4><div>שלום וברכה,<br>התקבל אישור רכישת שובר במערכת.</div>'+(x.note?'<div style="margin-top:6px">'+esc(x.note)+'</div>':'')+
