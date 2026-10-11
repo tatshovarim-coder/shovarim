@@ -159,7 +159,7 @@ dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
 .st li:before{content:counter(s);position:absolute;right:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-weight:700}
 .st li:after{content:"";position:absolute;right:16px;top:38px;bottom:4px;width:2px;background:var(--line)}
 .st li:last-child{padding-bottom:4px}.st li:last-child:after{display:none}
-.st b{display:block;font-size:16px;margin-bottom:2px}.st p{margin:0;color:#334155}
+.st li>b{display:block;font-size:16px;margin-bottom:2px}.st p{margin:0;color:#334155}
 kbd{background:#eef2f7;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;font:13px Consolas,monospace;direction:ltr;display:inline-block}
 .tip{background:var(--acs);border-radius:10px;padding:10px 14px;margin:8px 0 0;font-size:14px;color:#1e3a8a}
 .warn{background:#fff4e5;border-radius:10px;padding:10px 14px;margin:8px 0 0;font-size:14px;color:#8a4b00}
@@ -229,7 +229,7 @@ kbd{background:#eef2f7;border:1px solid var(--line);border-bottom-width:2px;bord
 <li><b>ממלאים את הפרטים</b><p>מספר שלוחה, שם החנות (יופיע בנושא המייל), לאיזה מייל לשלוח, ומה לכתוב בשורת הזכאות. אם יש סניפים, לוחצים <b style="display:inline">"+ הוספת סניף"</b> ורושמים אותם לפי הסדר: הראשון הוא מקש 1, השני מקש 2, וכך הלאה (עד 9 סניפים).</p>
 <div class="warn">מספר השלוחה חייב להיות זהה בדיוק לשם השלוחה במערכת הטלפונית. <b>02</b> זה לא <b>2</b>! שלוחה בתוך שלוחה כותבים עם סלאש, למשל <b>2/3</b>.</div></li>
 <li><b>קובעים אם יש מעבר לנציג</b><p>בשדה "מעבר לנציג בהקשת 3" כותבים לאן להעביר (למשל <b style="display:inline">/3</b>). אם משאירים אותו ריק, האפשרות מבוטלת והמקש 3 לא פועל.</p></li>
-<li><b>בוחרים איך יישמע תפריט הסיום</b><p>או מקובץ הקלטה בשם <b style="display:inline">000.wav</b> שמעלים לשלוחה (מומלץ), או הקראה מטקסט (בטקסט אסור נקודה ומקף).</p></li>
+<li><b>בוחרים איך יישמע תפריט הסיום</b><p>או מקובץ הקלטה בשם <b style="display:inline;direction:ltr;unicode-bidi:isolate">000.wav</b> שמעלים לשלוחה (מומלץ), או הקראה מטקסט.</p></li>
 <li><b>בודקים שהכול תקין</b><p>בתפריט בצד לוחצים <b style="display:inline">"הקוד המוכן"</b>. אם כתוב <b style="display:inline">"✓ הקוד תקין"</b>, אפשר להמשיך. אם יש שורה אדומה, מתקנים לפי מה שכתוב בה.</p></li>
 </ol>
 
@@ -505,11 +505,14 @@ function restore(i){var v=hist()[i];if(!v)return;snap('לפני שחזור');var
 function ping(){var s=$("saved");if(!s)return;s.classList.add("on");clearTimeout(_sv);_sv=setTimeout(function(){s.classList.remove("on")},1600)}
 function hdr(){var b=document.querySelector('.bigid');if(!b)return;b.textContent=sel.id||'?';var h=document.querySelector('.ph h2');if(h)h.textContent='שלוחה '+(sel.id||'חדשה');var t=document.querySelector('.ph .sub');if(t)t.textContent=sel.store||'עריכת פרטי השלוחה'}
 function srt(){cfg.extensions.sort(function(a,b){var x=parseInt(a.id,10),y=parseInt(b.id,10);if(isNaN(x))x=1e9;if(isNaN(y))y=1e9;return x-y||String(a.id).localeCompare(String(b.id))})}
+/* בדיקת טקסט תפריט הסיום: מחזירה את התווים שימות המשיח לא מקבלת בהקראה, או ריק אם הכול תקין */
+function badMenu(t){var m=String(t||"").match(/[.\-,=&"'\u05F3\u05F4\u2013\u2014\n\r]/g);if(!m)return"";var u=[];m.forEach(function(c){if(u.indexOf(c)<0)u.push(c)});return u.map(function(c){return c==="\n"||c==="\r"?"ירידת שורה":c}).filter(function(c,i,a){return a.indexOf(c)===i}).join(" ")}
+function mchk(){var el=$("mterr");if(!el||!sel||!sel.menuText&&sel.menuText!=="")return;var b=badMenu(sel.menuText);el.style.display=b?"block":"none";el.textContent=b?"בטקסט יש תווים לא תקינים: "+b+" – יש להסיר אותם":""}
 function errors(){var er=[],seen={};cfg.extensions.forEach(function(e,i){var n="שלוחה "+(e.id||"#"+(i+1));
  if(!e.id)er.push(n+": חסר מספר שלוחה");else if(seen[e.id])er.push(n+": מספר שלוחה כפול");seen[e.id]=1;
  if(!e.store)er.push(n+": חסר שם חנות");if(!e.email)er.push(n+": חסר מייל נמען");
  if(e.branches.length>9)er.push(n+": מותרים עד 9 סניפים");if(e.branches.some(function(b){return!b.trim()}))er.push(n+": יש סניף ריק");
- if(!e.audio&&/[.\-]/.test(e.menuText))er.push(n+": בטקסט התפריט אסור נקודה או מקף")});return er}
+ if(!e.audio&&badMenu(e.menuText))er.push(n+": בטקסט התפריט יש תווים לא תקינים: "+badMenu(e.menuText))});return er}
 function side(){var er=errors().length,l0=document.querySelector('#side .list'),st=l0?l0.scrollTop:0,
  h='<button class="nav'+(sel==='g'?' on':'')+'" onclick="go(\'g\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span class="t"><strong>הגדרות כלליות</strong><em>מייל, כותרת וחתימה</em></span></button>'+
  '<div class="sh"><span>שלוחות</span><i class="cnt">'+cfg.extensions.length+'</i></div><div class="list">';
@@ -520,7 +523,7 @@ function go(x){sel=typeof x==='number'?cfg.extensions[x]:x;var m=$("main");m.cla
 function addExt(){var e=ext("","","","אישור תשלום לשובר");cfg.extensions.push(e);sel=e;gen();main();var f=document.querySelector('#main input');if(f)f.focus()}
 function delExt(){if(!confirm("למחוק את השלוחה?"))return;cfg.extensions.splice(cfg.extensions.indexOf(sel),1);sel='g';gen();main()}
 function G(k,v){cfg[k]=v;gen();if(sel==='g')pv()}
-function S(k,v){sel[k]=v;if(k==='id'||k==='store'){side();hdr()}pv();gen()}
+function S(k,v){sel[k]=v;if(k==='menuText')mchk();if(k==='id'||k==='store'){side();hdr()}pv();gen()}
 function B(j,v){sel.branches[j]=v;pv();gen()}
 function ab(){sel.branches.push("");main();gen();var i=document.querySelectorAll('.br input');i[i.length-1].focus()}
 function rb(j){sel.branches.splice(j,1);main();gen()}
@@ -540,12 +543,12 @@ function main(){var m=$("main"),h;
  else{var e=sel;
   var br=e.branches.map(function(n,j){return '<div class="br"><b>'+(j+1)+'</b><input type="text" placeholder="שם הסניף" value="'+esc(n)+'" oninput="B('+j+',this.value)"><button class="d" onclick="rb('+j+')">הסר</button></div>'}).join('');
   h='<div class="wrap"><div class="ph"><div class="bigid">'+esc(e.id||'?')+'</div><div class="grow"><h2>שלוחה '+esc(e.id||'חדשה')+'</h2><p class="sub">'+esc(e.store||'עריכת פרטי השלוחה')+'</p></div><button class="s" onclick="dupExt()">שכפול שלוחה</button><button class="d" onclick="delExt()">מחיקת שלוחה</button></div><div class="cols"><div>'+
-   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="warn" style="margin:0 0 14px"><b>חשוב:</b> כותבים את מספר השלוחה בדיוק כמו שהוא במערכת הטלפונית, ממש תו-תו. <b>5</b> זה לא <b>05</b>, ושלוחה בתוך שלוחה נכתבת עם סלאש, למשל <b>2/3</b>.</div><div class="g f">'+fld(e,"id","מספר שלוחה","S","בדיוק כמו בימות המשיח: 5 או 05, ואם זו שלוחה בתוך שלוחה אז 2/3")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
+   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="warn" style="margin:0 0 14px"><b>חשוב:</b> כותבים את מספר השלוחה בדיוק כמו שהוא במערכת הטלפונית, ממש תו-תו. <b>5</b> זה לא <b>05</b>, ושלוחה בתוך שלוחה נכתבת עם סלאש, למשל <b>2/3</b>.</div><div class="g f">'+fld(e,"id","מספר שלוחה","S")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
    '<div class="g" style="margin-top:14px">'+fld(e,"eligibility","טקסט זכאות במייל","S")+fld(e,"note","הערה בגוף המייל (לא חובה)","S")+'</div></div>'+
    '<div class="card"><h3>בחירת סניף</h3><p class="hint">'+(e.branches.length?'הלקוח מקיש את מספר הסניף לפני שליחת המייל.':'אפשר להוסיף סניפים כדי שהלקוח יבחר לפני שליחת המייל.')+'</p>'+br+(e.branches.length?'':'<div class="emptyb">אין סניפים. המייל נשלח מיד.</div>')+'<button class="s" onclick="ab()">+ הוספת סניף</button></div>'+
    '<div class="card"><h3>תפריט סיום</h3><p class="hint">מה שהלקוח שומע אחרי שהמייל נשלח.</p><div class="seg"><button class="'+(e.audio?'on':'')+'" onclick="setAudio(true)">קובץ 000.wav בשלוחה</button><button class="'+(e.audio?'':'on')+'" onclick="setAudio(false)">טקסט מהקוד</button></div>'+
-   (e.audio?'':'<div style="margin-bottom:12px"><label class="l">טקסט התפריט (בלי נקודה ובלי מקף)</label><textarea oninput="S(\'menuText\',this.value)">'+esc(e.menuText)+'</textarea></div>')+
-   '<div style="max-width:320px">'+fld(e,"transfer","מעבר לנציג בהקשת 3 (נתיב, למשל /3)","S","השאירו ריק כדי לבטל את האפשרות – המקש 3 לא יופיע ולא יעבוד. (אם תפריט הסיום מוקלט בקובץ, ודאו שההקלטה לא מציעה הקשה על 3)")+'</div></div></div>'+
+   (e.audio?'':'<div style="margin-bottom:12px"><label class="l">טקסט התפריט</label><textarea oninput="S(\'menuText\',this.value)">'+esc(e.menuText)+'</textarea><div id="mterr" class="err" style="margin:6px 0 0;display:'+(badMenu(e.menuText)?'block':'none')+'">'+(badMenu(e.menuText)?'בטקסט יש תווים לא תקינים: '+esc(badMenu(e.menuText))+' – יש להסיר אותם':'')+'</div></div>')+
+   '<div style="max-width:320px">'+fld(e,"transfer","מעבר לנציג בהקשת 3 (נתיב, למשל /3. ריק = ללא מעבר)","S")+'</div></div></div>'+
    '<div class="side2"><div class="card"><h3>מסלול השיחה</h3><ul class="steps" id="fl"></ul></div><div class="card"><h3>תצוגה לדוגמה של המייל</h3><div id="pv"></div></div></div></div></div>'}
  m.innerHTML=h;pv();if(sel==='code'){fillCode();$("ed").onkeydown=function(e){if((e.ctrlKey||e.metaKey)&&(e.key==='a'||e.key==='A')){e.preventDefault();var r=document.createRange();r.selectNodeContents($("code"));var g=getSelection();g.removeAllRanges();g.addRange(r)}}}}
 var HR=/(\/\*.*?\*\/)|(^|\s)(\/\/.*)$|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\b(var|function|return|if|else|for|while|try|catch|finally|new|null|true|false|typeof)\b|\b(\d+)\b/g;
