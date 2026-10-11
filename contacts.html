@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנשי קשר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+:root{--bg:#f3f5f9;--ink:#1e293b;--mut:#64748b;--line:#e2e8f0;--card:#fff;--ac:#2563eb;--ac2:#1d4ed8;--acs:#eaf1ff;--bad:#dc2626;--bads:#fee2e2;--soft:#f8fafc;--ok:#15803d;--star:#f59e0b}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;color:var(--ink);font:15px/1.5 Heebo,'Segoe UI',Arial,sans-serif;background:radial-gradient(900px 480px at 88% -10%,#dbe7ff 0,transparent 60%),radial-gradient(700px 420px at 0% 105%,#e3efff 0,transparent 60%),var(--bg);background-attachment:fixed;display:flex;flex-direction:column;overflow:hidden}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* header */
+header{background:#ffffffcc;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex:none;z-index:20}
+header h1{margin:0;font-size:18px;font-weight:700;white-space:nowrap}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--mut);text-decoration:none;padding:6px 10px;border-radius:8px;font-size:14px;transition:background .15s,color .15s}
+.back:hover{background:var(--acs);color:var(--ac2)}
+.back svg{transform:scaleX(-1)}
+.search{flex:1;max-width:460px;position:relative;margin-inline:auto}
+.search svg{position:absolute;top:50%;right:12px;transform:translateY(-50%);color:var(--mut);pointer-events:none}
+.search input{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:99px;padding:8px 38px 8px 36px;outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
+.search input:focus{background:#fff;border-color:#93b4f5;box-shadow:0 0 0 3px #2563eb1f}
+.search .x{position:absolute;top:50%;left:8px;transform:translateY(-50%);border:0;background:none;color:var(--mut);padding:4px;border-radius:50%;display:none}
+.search.has .x{display:block}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:7px 13px;font-weight:500;transition:background .15s,border-color .15s,transform .1s}
+.btn:hover{background:var(--soft);border-color:#cbd5e1}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn.pri:hover{background:var(--ac2)}
+.btn.bad{color:var(--bad)}
+.btn.bad:hover{background:var(--bads);border-color:#fca5a5}
+.ib{width:36px;height:36px;display:inline-grid;place-items:center;border:0;background:none;border-radius:10px;color:var(--mut);transition:background .15s,color .15s}
+.ib:hover{background:var(--acs);color:var(--ac2)}
+.ib.on{color:var(--star)}
+.ib.on svg{fill:var(--star)}
+#menuBtn,#burger{position:relative}
+.menu{position:absolute;top:calc(100% + 6px);left:0;min-width:230px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px #0f172a24;padding:6px;z-index:50;animation:dlgIn .2s both}
+.menu button{display:flex;width:100%;align-items:center;gap:10px;border:0;background:none;text-align:right;padding:9px 12px;border-radius:9px;color:var(--ink)}
+.menu button:hover{background:var(--acs)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+.menu .lbl{font-size:12px;color:var(--mut);padding:6px 12px 2px}
+.menu button.cur{color:var(--ac2);font-weight:700}
+
+/* layout */
+.app{flex:1;min-height:0;display:grid;grid-template-columns:230px 360px 1fr;gap:0}
+aside{border-inline-end:1px solid var(--line);background:#ffffffa6;overflow:auto;padding:12px 10px;display:flex;flex-direction:column;gap:2px}
+.nav{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:right;padding:9px 12px;border-radius:11px;color:var(--ink);transition:background .15s}
+.nav:hover{background:#eef2f9}
+.nav.on{background:var(--acs);color:var(--ac2);font-weight:700}
+.nav .n{margin-inline-start:auto;font-size:12px;color:var(--mut);background:#f1f5f9;border-radius:99px;padding:0 8px;min-width:24px;text-align:center}
+.nav.on .n{background:#fff;color:var(--ac2)}
+.side-h{display:flex;align-items:center;justify-content:space-between;color:var(--mut);font-size:12px;font-weight:700;padding:14px 12px 4px;letter-spacing:.02em}
+.side-h button{border:0;background:none;color:var(--ac2);font-weight:700;font-size:12px;padding:2px 6px;border-radius:6px}
+.side-h button:hover{background:var(--acs)}
+.gdot{width:10px;height:10px;border-radius:50%;flex:none}
+
+.listpane{display:flex;flex-direction:column;min-height:0;border-inline-end:1px solid var(--line);background:#ffffffd9}
+.lh{padding:12px 16px 8px;display:flex;align-items:center;gap:8px;flex:none}
+.lh h2{margin:0;font-size:17px;flex:1}
+.lh small{color:var(--mut);font-weight:400;font-size:13px;margin-inline-start:6px}
+.bulk{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--acs);border-block:1px solid #c3d6fb;flex:none;flex-wrap:wrap}
+.bulk b{margin-inline-end:auto;color:var(--ac2)}
+.bulk .btn{padding:5px 10px;font-size:13px}
+.lwrap{flex:1;min-height:0;position:relative;display:flex}
+#list{flex:1;overflow:auto;padding:0 6px 80px;scroll-behavior:smooth}
+.sec{position:sticky;top:0;z-index:2;background:#f3f6fbee;backdrop-filter:blur(6px);color:var(--ac2);font-weight:800;font-size:13px;padding:4px 12px;border-radius:8px;margin:6px 0 2px}
+.row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:13px;cursor:pointer;transition:background .12s;user-select:none}
+.row:hover{background:#eef2f9}
+.row.on{background:var(--acs)}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t span{display:block;color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .st{color:var(--star);display:flex}
+.row .st svg{width:15px;height:15px;fill:var(--star);stroke:var(--star)}
+.row .ck{width:20px;height:20px;border-radius:6px;border:2px solid #cbd5e1;display:none;place-items:center;flex:none;background:#fff;color:#fff}
+.selmode .row .ck{display:grid}
+.row.pk .ck{background:var(--ac);border-color:var(--ac)}
+.row .ck svg{width:13px;height:13px;stroke-width:3.2}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:16px;flex:none;overflow:hidden;background-size:cover;background-position:center}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.az{width:22px;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:10px;color:var(--mut);padding:4px 0;flex:none;overflow:hidden}
+.az button{border:0;background:none;color:inherit;font-size:10.5px;line-height:1.35;padding:0 4px;font-weight:700}
+.az button:hover{color:var(--ac2)}
+.fab{position:absolute;bottom:16px;left:16px;width:54px;height:54px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--ac),#4f8ff7);color:#fff;display:none;place-items:center;box-shadow:0 10px 24px #2563eb55}
+.fab svg{width:24px;height:24px;stroke-width:2.4}
+.empty{text-align:center;color:var(--mut);padding:50px 24px}
+.empty .big{width:76px;height:76px;margin:0 auto 14px;border-radius:24px;background:var(--acs);color:var(--ac2);display:grid;place-items:center}
+.empty .big svg{width:36px;height:36px}
+.empty h3{margin:0 0 6px;color:var(--ink)}
+
+/* detail */
+.detail{overflow:auto;padding:28px 32px 60px;min-width:0}
+.dcard{max-width:640px;margin:0 auto;animation:rise .35s both}
+.dtop{display:flex;align-items:center;gap:20px;margin-bottom:18px}
+.dtop .av{width:104px;height:104px;font-size:40px;box-shadow:0 10px 26px #0f172a25}
+.dtop h2{margin:0;font-size:27px;line-height:1.2;font-weight:800;word-break:break-word}
+.dtop p{margin:3px 0 0;color:var(--mut)}
+.dtop .tools{margin-inline-start:auto;align-self:flex-start;display:flex;gap:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:2px 11px}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:10px;margin-bottom:18px}
+.act{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-decoration:none;color:var(--ac2);font-size:13px;font-weight:500;transition:transform .15s,box-shadow .15s,border-color .15s}
+.act:hover{transform:translateY(-3px);box-shadow:0 10px 22px #2563eb1f;border-color:#b7cffa}
+.act svg{width:22px;height:22px}
+.act.dis{opacity:.4;pointer-events:none}
+.block{background:#fff;border:1px solid var(--line);border-radius:18px;margin-bottom:14px;overflow:hidden}
+.fld{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid var(--line)}
+.fld:first-child{border-top:0}
+.fld .k{width:64px;flex:none;color:var(--mut);font-size:12.5px}
+.fld .v{flex:1;min-width:0;word-break:break-word}
+.fld .v a{color:var(--ac2);text-decoration:none}
+.fld .v a:hover{text-decoration:underline}
+.fld .v bdi{unicode-bidi:isolate}
+.fld .mini{display:flex;gap:2px;opacity:0;transition:opacity .15s}
+.fld:hover .mini,.fld:focus-within .mini{opacity:1}
+.mini a,.mini button{width:30px;height:30px;display:grid;place-items:center;border:0;background:none;border-radius:8px;color:var(--mut);text-decoration:none}
+.mini a:hover,.mini button:hover{background:var(--acs);color:var(--ac2)}
+.mini svg{width:16px;height:16px}
+.notes{white-space:pre-wrap}
+.meta{color:var(--mut);font-size:12.5px;text-align:center;margin-top:14px}
+.dempty{height:100%;display:grid;place-items:center;color:var(--mut);text-align:center}
+.back-l{display:none}
+
+/* dups */
+.dup{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;margin:8px 4px}
+.dup .why{font-size:12.5px;color:var(--warn,#b45309);background:#fef1dc;border-radius:99px;display:inline-block;padding:1px 10px;margin:2px 4px 6px}
+.dup .row{cursor:default}
+.dup .row:hover{background:none}
+.dup .bar{display:flex;gap:8px;padding:6px 4px 2px}
+
+/* dialogs */
+dialog{border:0;border-radius:22px;padding:0;box-shadow:0 30px 80px #0f172a45;width:min(560px,94vw);max-height:92vh;color:var(--ink);background:#fff}
+dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
+dialog.sm{width:min(400px,94vw)}
+.dform{display:flex;flex-direction:column;max-height:92vh}
+.dh{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex:none}
+.dh h2{margin:0;font-size:18px;flex:1}
+.db{padding:18px 22px;overflow:auto;flex:1}
+.df{padding:12px 22px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex:none;background:var(--soft)}
+.pic{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.pic .av{width:78px;height:78px;font-size:30px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label.l{display:block;font-size:12.5px;color:var(--mut);margin:12px 0 4px;font-weight:500}
+.g2 label.l:first-child{margin-top:0}
+.in{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;outline:none;transition:border-color .15s,box-shadow .15s}
+.in:focus{border-color:#93b4f5;box-shadow:0 0 0 3px #2563eb1f}
+textarea.in{min-height:84px;resize:vertical}
+.multi{display:flex;flex-direction:column;gap:8px}
+.mrow{display:flex;gap:6px}
+.mrow select{width:92px;flex:none}
+.mrow .in:nth-child(2){flex:1}
+.add{border:0;background:none;color:var(--ac2);font-weight:700;padding:6px 2px;display:inline-flex;align-items:center;gap:6px;align-self:flex-start}
+.gpick{display:flex;flex-wrap:wrap;gap:6px}
+.gpick label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:3px 12px;cursor:pointer;user-select:none;font-size:13.5px}
+.gpick input{display:none}
+.gpick label:has(input:checked){background:var(--acs);border-color:#93b4f5;color:var(--ac2);font-weight:700}
+.err{color:var(--bad);font-size:13px;margin-inline-end:auto;align-self:center}
+.plist{display:flex;flex-direction:column;gap:6px}
+.plist button{display:flex;align-items:center;gap:10px;width:100%;text-align:right;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px}
+.plist button:hover{background:var(--acs)}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;border-radius:14px;padding:10px 16px;display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:.25s;z-index:200;box-shadow:0 14px 34px #0f172a50;max-width:92vw}
+#toast.show{opacity:1;transform:translateX(-50%);pointer-events:auto}
+#toast button{border:0;background:none;color:#7fb0ff;font-weight:700;padding:0}
+.overlay{position:fixed;inset:0;z-index:150;background:#2563ebcc;color:#fff;display:none;place-items:center;font-size:24px;font-weight:700;backdrop-filter:blur(4px)}
+.overlay.on{display:grid}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+
+/* responsive */
+@media(max-width:1020px){.app{grid-template-columns:340px 1fr}aside{position:fixed;inset:0 0 0 auto;width:260px;z-index:60;background:#fff;transform:translateX(105%);transition:transform .25s}body.side aside{transform:none;box-shadow:-20px 0 50px #0f172a30}.scrim{display:none}body.side .scrim{display:block;position:fixed;inset:0;background:#0f172a55;z-index:55}}
+@media(min-width:1021px){#burger{display:none}.scrim{display:none!important}}
+@media(max-width:760px){
+ .app{grid-template-columns:1fr}
+ .listpane{border:0}
+ .detail{position:fixed;inset:0;z-index:40;background:var(--bg);padding:14px 16px 60px;transform:translateX(-102%);transition:transform .25s}
+ body.showd .detail{transform:none}
+ .back-l{display:inline-flex}
+ .dtop{flex-wrap:wrap;gap:14px}.dtop .av{width:84px;height:84px;font-size:32px}
+ .dtop .tools{margin:0}
+ .fab{display:grid}
+ .hide-m{display:none}
+ .back .t{display:none}
+ .fld .mini{opacity:1}
+ .g2{grid-template-columns:1fr}
+}
+@media print{header,aside,.listpane,.acts,.tools,.mini,.back-l{display:none!important}.detail{position:static;transform:none;overflow:visible}body{display:block;overflow:visible;background:#fff}.app{display:block}}
+</style>
+</head>
+<body>
+<div id="topbar"></div>
+<header>
+  <a class="back" href="index.html"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span class="t">תפריט</span></a>
+  <button class="ib" id="burger" aria-label="תפריט צד"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  <h1 class="hide-m">אנשי קשר</h1>
+  <div class="search" id="sbox">
+    <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="חיפוש לפי שם, טלפון, מייל, הערה…   ( / )" autocomplete="off" aria-label="חיפוש">
+    <button class="x" id="qx" aria-label="ניקוי חיפוש"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <button class="btn pri hide-m" data-act="new"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>איש קשר חדש</button>
+  <div style="position:relative">
+    <button class="ib" id="menuBtn" aria-label="עוד אפשרויות" aria-haspopup="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg></button>
+    <div class="menu" id="menu" hidden></div>
+  </div>
+</header>
+<div class="scrim" id="scrim"></div>
+<div class="app" id="appEl">
+  <aside id="side"></aside>
+  <section class="listpane" id="lp">
+    <div class="lh"><h2 id="vt">כל אנשי הקשר</h2>
+      <button class="ib" data-act="selmode" title="בחירה מרובה" aria-label="בחירה מרובה"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg></button>
+    </div>
+    <div class="bulk" id="bulk" hidden></div>
+    <div class="lwrap"><div id="list"></div><div class="az" id="az"></div>
+      <button class="fab" data-act="new" aria-label="איש קשר חדש"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+  </section>
+  <main class="detail" id="detail"></main>
+</div>
+
+<dialog id="dlgE"></dialog>
+<dialog id="dlgG" class="sm"></dialog>
+<dialog id="dlgP" class="sm"></dialog>
+<input type="file" id="file" accept=".vcf,.csv,.json,text/vcard,text/csv,application/json" hidden>
+<input type="file" id="photoIn" accept="image/*" hidden>
+<div id="toast"></div>
+<div class="overlay" id="drop">שחררו כאן כדי לייבא אנשי קשר</div>
+<script src="site.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(i){return document.getElementById(i)};
+var KEY='contactsV1';
+var COLORS=['#2563eb','#7c3aed','#db2777','#dc2626','#ea580c','#ca8a04','#16a34a','#0d9488','#0891b2','#4f46e5','#9333ea','#be185d'];
+var GCOL=['#2563eb','#16a34a','#ea580c','#9333ea','#db2777','#0d9488','#ca8a04','#dc2626'];
+var PL={mobile:'נייד',home:'בית',work:'עבודה',main:'ראשי',fax:'פקס',other:'אחר'};
+var EL={personal:'אישי',work:'עבודה',other:'אחר'};
+var NOYEAR='1904';
+var S={contacts:[],groups:[],sortBy:'first',view:'all',q:'',sel:null,selmode:false,picked:{}};
+var undoSnap=null,toastT=null;
+
+/* ---------- icons ---------- */
+var P={
+ phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+ sms:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ wa:'<path d="M3 21l1.7-5A8.5 8.5 0 1 1 8 19.3z"/><path d="M9 9c0 3 3 6 6 6l1.2-1.4-2-1-1 .6c-.8-.4-1.6-1.2-2-2l.6-1-1-2z"/>',
+ mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+ star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+ trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-4-6.3"/>',
+ cake:'<path d="M4 21v-8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8M2 21h20M4 16c2 1.5 3 1.5 4 0s2.5-1.5 4 0 3 1.5 4 0 2-1 4 0M12 11V7M12 4v.5"/>',
+ copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+ map:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+ globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ back:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+ dl:'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>',
+ ul:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',
+ merge:'<path d="M6 3v6a6 6 0 0 0 6 6 6 6 0 0 1 6 6M18 3v6a6 6 0 0 1-3 5.2M12 15v6"/>',
+ restore:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',
+ check:'<path d="m5 12 5 5 9-10"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+ print:'<path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/>',
+ sort:'<path d="M7 4v16M3 16l4 4 4-4M17 20V4m-4 4 4-4 4 4"/>',
+ note:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6"/>',
+ cam:'<path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/>',
+ brief:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3M3 13h18"/>'
+};
+function ic(n,c){return '<svg class="i'+(c?' '+c:'')+'" viewBox="0 0 24 24">'+P[n]+'</svg>'}
+
+/* ---------- utils ---------- */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function digits(s){return String(s||'').replace(/\D/g,'')}
+function telHref(s){return 'tel:'+String(s).replace(/[^\d+]/g,'')}
+function waNum(s){var d=digits(s),p=String(s).trim().charAt(0)==='+';if(p)return d;if(d.indexOf('00')===0)return d.slice(2);if(d.charAt(0)==='0')return '972'+d.slice(1);return d}
+function toast(t,label,fn){var el=$('toast');el.innerHTML='<span>'+esc(t)+'</span>'+(label?'<button>'+esc(label)+'</button>':'');if(label)el.querySelector('button').onclick=function(){fn();el.classList.remove('show')};el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove('show')},label?6500:2400)}
+function normHe(ch){return({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'})[ch]||ch}
+function fullName(c){return [c.first,c.last].filter(Boolean).join(' ').trim()}
+function title(c){return fullName(c)||c.company||(c.phones[0]&&c.phones[0].value)||(c.emails[0]&&c.emails[0].value)||'ללא שם'}
+function sortKey(c){var a=S.sortBy==='last'?[c.last,c.first,c.company]:[c.first,c.last,c.company];var k=(a[0]||a[1]||a[2]||'').trim();return k||'~'}
+function letter(c){var k=sortKey(c);if(k==='~')return '#';var ch=normHe(k.charAt(0).toUpperCase());if(/[\u05d0-\u05ea]/.test(ch)||/[A-Z]/.test(ch))return ch;return '#'}
+function cmpKey(a,b){var ra=/[\u05d0-\u05ea]/.test(a.charAt(0))?0:/[A-Za-z]/.test(a.charAt(0))?1:2,rb=/[\u05d0-\u05ea]/.test(b.charAt(0))?0:/[A-Za-z]/.test(b.charAt(0))?1:2;return ra-rb||a.localeCompare(b,'he')}
+function initials(c){var f=(c.first||'').trim().charAt(0),l=(c.last||'').trim().charAt(0);var s=(f+l)||(c.company||'').trim().charAt(0)||'';return s.toUpperCase()}
+function color(c){var s=title(c),h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return COLORS[Math.abs(h)%COLORS.length]}
+function avatar(c,cls){var st='background:'+color(c);if(c.photo)return '<div class="av '+(cls||'')+'">'+'<img alt="" src="'+esc(c.photo)+'"></div>';var i=initials(c);return '<div class="av '+(cls||'')+'" style="'+st+'">'+(i?esc(i):ic('user'))+'</div>'}
+function groupById(id){for(var i=0;i<S.groups.length;i++)if(S.groups[i].id===id)return S.groups[i]}
+function byId(id){for(var i=0;i<S.contacts.length;i++)if(S.contacts[i].id===id)return S.contacts[i]}
+function blank(){return{id:uid(),first:'',last:'',company:'',jobTitle:'',phones:[],emails:[],address:'',website:'',bday:'',notes:'',fav:false,groups:[],photo:'',created:Date.now(),updated:Date.now()}}
+function fixC(c){var b=blank();for(var k in b)if(c[k]==null)c[k]=b[k];c.phones=(c.phones||[]).filter(function(p){return p&&p.value});c.emails=(c.emails||[]).filter(function(p){return p&&p.value});c.groups=c.groups||[];return c}
+
+/* ---------- storage ---------- */
+function load(){
+  try{var d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){S.contacts=(d.contacts||[]).map(fixC);S.groups=d.groups||[];S.sortBy=d.sortBy||'first'}}catch(e){}
+  var lim=Date.now()-30*864e5;S.contacts=S.contacts.filter(function(c){return !c.deleted||c.deleted>lim});
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify({contacts:S.contacts,groups:S.groups,sortBy:S.sortBy}))}
+  catch(e){toast('לא ניתן לשמור: האחסון בדפדפן מלא. מומלץ לייצא גיבוי ולהסיר תמונות.')}
+}
+function snap(){undoSnap=JSON.stringify({c:S.contacts,g:S.groups})}
+function undo(){if(!undoSnap)return;var d=JSON.parse(undoSnap);S.contacts=d.c;S.groups=d.g;undoSnap=null;save();renderAll();toast('הפעולה בוטלה')}
+function done(msg){save();renderAll();toast(msg,'ביטול',undo)}
+
+/* ---------- query ---------- */
+function live(){return S.contacts.filter(function(c){return !c.deleted})}
+function nextBday(c){
+  if(!c.bday)return null;var m=c.bday.match(/^(\d{4})-(\d\d)-(\d\d)$/);if(!m)return null;
+  var now=new Date();now.setHours(0,0,0,0);var y=now.getFullYear(),mo=+m[2]-1,d=+m[3];
+  var t=new Date(y,mo,d);if(t<now)t=new Date(y+1,mo,d);
+  return Math.round((t-now)/864e5);
+}
+function ageOf(c){var m=c.bday&&c.bday.match(/^(\d{4})-(\d\d)-(\d\d)$/);if(!m||m[1]<=NOYEAR)return null;var n=new Date(),a=n.getFullYear()-(+m[1]);if(n.getMonth()+1<+m[2]||(n.getMonth()+1===+m[2]&&n.getDate()<+m[3]))a--;return a}
+function hay(c){var g=c.groups.map(function(i){var x=groupById(i);return x?x.name:''}).join(' ');return [c.first,c.last,c.company,c.jobTitle,c.address,c.website,c.notes,g].concat(c.phones.map(function(p){return p.value+' '+digits(p.value)}),c.emails.map(function(p){return p.value})).join(' ').toLowerCase()}
+function filtered(){
+  var v=S.view,arr;
+  if(v==='trash')arr=S.contacts.filter(function(c){return c.deleted});
+  else{arr=live();
+    if(v==='fav')arr=arr.filter(function(c){return c.fav});
+    else if(v==='bday')arr=arr.filter(function(c){return c.bday&&nextBday(c)!=null});
+    else if(v.indexOf('g:')===0){var gid=v.slice(2);arr=arr.filter(function(c){return c.groups.indexOf(gid)>-1})}
+    else if(v==='nophone')arr=arr.filter(function(c){return !c.phones.length});
+  }
+  if(S.q){var q=S.q.toLowerCase().trim(),dq=digits(q),words=q.split(/\s+/);
+    arr=arr.filter(function(c){var h=hay(c);return words.every(function(w){return h.indexOf(w)>-1})||(dq.length>=3&&h.indexOf(dq)>-1)})}
+  if(v==='bday')arr.sort(function(a,b){return nextBday(a)-nextBday(b)});
+  else arr.sort(function(a,b){return cmpKey(sortKey(a),sortKey(b))||sortKey(a).localeCompare(sortKey(b),'he')});
+  return arr;
+}
+
+/* ---------- render: sidebar ---------- */
+function cnt(f){return live().filter(f).length}
+function renderSide(){
+  var h='';
+  function nav(v,icon,label,n){return '<button class="nav'+(S.view===v?' on':'')+'" data-view="'+esc(v)+'">'+icon+'<span>'+esc(label)+'</span>'+(n!=null?'<span class="n">'+n+'</span>':'')+'</button>'}
+  h+=nav('all',ic('users'),'כל אנשי הקשר',live().length);
+  h+=nav('fav',ic('star'),'מועדפים',cnt(function(c){return c.fav}));
+  h+=nav('bday',ic('cake'),'ימי הולדת',cnt(function(c){return c.bday}));
+  h+='<div class="side-h"><span>קבוצות</span><button data-act="newgroup">+ חדשה</button></div>';
+  S.groups.forEach(function(g,i){h+=nav('g:'+g.id,'<span class="gdot" style="background:'+g.color+'"></span>',g.name,cnt(function(c){return c.groups.indexOf(g.id)>-1}))});
+  if(!S.groups.length)h+='<div style="color:var(--mut);font-size:13px;padding:2px 12px">אין קבוצות עדיין</div>';
+  h+='<div class="side-h"><span>ניהול</span></div>';
+  var dn=dupSets().length;
+  h+=nav('dups',ic('merge'),'כפילויות',dn);
+  h+=nav('nophone',ic('phone'),'בלי טלפון',cnt(function(c){return !c.phones.length}));
+  h+=nav('trash',ic('trash'),'נמחקו לאחרונה',S.contacts.filter(function(c){return c.deleted}).length);
+  $('side').innerHTML=h;
+}
+
+/* ---------- render: list ---------- */
+var VT={all:'כל אנשי הקשר',fav:'מועדפים',bday:'ימי הולדת',dups:'כפילויות',nophone:'בלי מספר טלפון',trash:'נמחקו לאחרונה'};
+function viewTitle(){if(VT[S.view])return VT[S.view];var g=groupById(S.view.slice(2));return g?g.name:'אנשי קשר'}
+function rowHtml(c,opt){
+  opt=opt||{};var sub=c.company&&fullName(c)?c.company:(c.phones[0]?c.phones[0].value:(c.emails[0]?c.emails[0].value:''));
+  if(S.view==='bday'){var n=nextBday(c);sub=n===0?'🎂 היום!':n===1?'מחר':'בעוד '+n+' ימים'}
+  if(c.deleted){var left=30-Math.floor((Date.now()-c.deleted)/864e5);sub='יימחק לצמיתות בעוד '+Math.max(left,0)+' ימים'}
+  return '<div class="row'+(S.sel===c.id&&!opt.dup?' on':'')+(S.picked[c.id]?' pk':'')+'" data-id="'+c.id+'" tabindex="0" role="button">'
+   +'<span class="ck">'+ic('check')+'</span>'+avatar(c)
+   +'<div class="t"><b>'+esc(title(c))+'</b><span dir="auto">'+esc(sub)+'</span></div>'
+   +(c.fav&&!opt.dup?'<span class="st">'+ic('star')+'</span>':'')+'</div>';
+}
+function renderList(){
+  document.body.classList.toggle('selmode',S.selmode);
+  $('vt').innerHTML=esc(viewTitle());
+  if(S.view==='dups'){renderDups();$('az').innerHTML='';renderBulk();return}
+  var arr=filtered(),h='',last='',letters=[];
+  $('vt').innerHTML=esc(viewTitle())+'<small>'+arr.length+'</small>';
+  if(!arr.length){
+    var all=live().length;
+    var msg=S.q?['לא נמצאו תוצאות','נסו מילה אחרת או חפשו לפי מספר טלפון.']:S.view==='trash'?['הפח ריק','אנשי קשר שנמחקו יופיעו כאן למשך 30 יום.']:S.view==='fav'?['אין מועדפים','סמנו איש קשר בכוכב כדי לראות אותו כאן.']:S.view==='bday'?['אין ימי הולדת','הוסיפו תאריך לידה לאיש קשר כדי לראות אותו כאן.']:all?['אין כאן אנשי קשר','']:['אין עדיין אנשי קשר','הוסיפו איש קשר ראשון, או ייבאו קובץ vCard / CSV.'];
+    h='<div class="empty"><div class="big">'+ic('users')+'</div><h3>'+msg[0]+'</h3><p>'+msg[1]+'</p>'+(!all&&!S.q?'<button class="btn pri" data-act="new">'+ic('plus')+'איש קשר חדש</button> <button class="btn" data-act="import">'+ic('ul')+'ייבוא</button>':'')+'</div>';
+    $('list').innerHTML=h;$('az').innerHTML='';renderBulk();return}
+  var byLetter=S.view!=='bday'&&S.view!=='trash';
+  arr.forEach(function(c){
+    if(byLetter){var L=letter(c);if(L!==last){last=L;letters.push(L);h+='<div class="sec" id="sec-'+letters.length+'">'+esc(L)+'</div>'}}
+    h+=rowHtml(c)});
+  $('list').innerHTML=h;
+  $('az').innerHTML=letters.length>1?letters.map(function(L,i){return '<button data-az="'+(i+1)+'" tabindex="-1">'+esc(L)+'</button>'}).join(''):'';
+  renderBulk();
+}
+function renderBulk(){
+  var b=$('bulk'),n=Object.keys(S.picked).length,tr=S.view==='trash';
+  var trashBar=tr&&!S.selmode&&S.contacts.some(function(c){return c.deleted});
+  if(!S.selmode&&!trashBar){b.hidden=true;return}
+  b.hidden=false;
+  if(S.selmode){
+    b.innerHTML='<b>'+n+' נבחרו</b><button class="btn" data-act="selall">בחר הכול</button>'+(tr?'<button class="btn" data-act="bulk-restore">'+ic('restore')+'שחזור</button><button class="btn bad" data-act="bulk-purge">'+ic('trash')+'מחיקה</button>':'<button class="btn" data-act="bulk-group">'+ic('users')+'לקבוצה</button><button class="btn" data-act="bulk-export">'+ic('dl')+'ייצוא</button><button class="btn bad" data-act="bulk-del">'+ic('trash')+'מחיקה</button>')+'<button class="ib" data-act="selmode" aria-label="סיום">'+ic('x')+'</button>';
+  }else b.innerHTML='<b>הפח ריק אוטומטית אחרי 30 יום</b><button class="btn bad" data-act="empty-trash">ריקון הפח</button>';
+}
+
+/* ---------- render: detail ---------- */
+function fld(k,v,mini){return '<div class="fld"><span class="k">'+k+'</span><div class="v">'+v+'</div>'+(mini?'<div class="mini">'+mini+'</div>':'')+'</div>'}
+function copyBtn(t){return '<button data-copy="'+esc(t)+'" title="העתקה" aria-label="העתקה">'+ic('copy')+'</button>'}
+function fmtDate(s){var m=s.match(/^(\d{4})-(\d\d)-(\d\d)$/);if(!m)return s;var mn=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];return (+m[3])+' ב'+mn[+m[2]-1]+(m[1]>NOYEAR?' '+m[1]:'')}
+function renderDetail(){
+  var c=S.sel&&byId(S.sel),el=$('detail');
+  if(!c){document.body.classList.remove('showd');el.innerHTML='<div class="dempty"><div><div class="empty" style="padding:0"><div class="big">'+ic('user')+'</div><h3>בחרו איש קשר</h3><p>או הוסיפו חדש עם הכפתור למעלה (מקש N)</p></div></div></div>';return}
+  var h='<div class="dcard"><button class="btn back-l" data-act="closed" style="margin-bottom:12px">'+ic('back')+'חזרה</button>';
+  h+='<div class="dtop">'+avatar(c)+'<div><h2>'+esc(title(c))+'</h2><p>'+esc([c.jobTitle,c.company&&fullName(c)?c.company:''].filter(Boolean).join(' · '))+'</p></div>';
+  if(c.deleted)h+='<div class="tools"><button class="btn" data-act="restore" data-id="'+c.id+'">'+ic('restore')+'שחזור</button><button class="btn bad" data-act="purge" data-id="'+c.id+'">מחיקה לצמיתות</button></div></div>';
+  else h+='<div class="tools"><button class="ib'+(c.fav?' on':'')+'" data-act="fav" data-id="'+c.id+'" title="מועדף" aria-label="מועדף">'+ic('star')+'</button><button class="ib" data-act="edit" data-id="'+c.id+'" title="עריכה" aria-label="עריכה">'+ic('edit')+'</button><button class="ib" data-act="vcf1" data-id="'+c.id+'" title="ייצוא vCard" aria-label="ייצוא">'+ic('dl')+'</button><button class="ib" data-act="del" data-id="'+c.id+'" title="מחיקה" aria-label="מחיקה">'+ic('trash')+'</button></div></div>';
+  if(c.groups.length){h+='<div class="chips">'+c.groups.map(function(i){var g=groupById(i);return g?'<span class="chip"><span class="gdot" style="background:'+g.color+'"></span>'+esc(g.name)+'</span>':''}).join('')+'</div>'}
+  if(!c.deleted){
+    var p=c.phones[0],e=c.emails[0];
+    h+='<div class="acts">'
+     +'<a class="act'+(p?'':' dis')+'" '+(p?'href="'+esc(telHref(p.value))+'"':'')+'>'+ic('phone')+'התקשר</a>'
+     +'<a class="act'+(p?'':' dis')+'" '+(p?'href="sms:'+esc(String(p.value).replace(/[^\d+]/g,''))+'"':'')+'>'+ic('sms')+'הודעה</a>'
+     +'<a class="act'+(p?'':' dis')+'" '+(p?'href="https://wa.me/'+esc(waNum(p.value))+'" target="_blank" rel="noopener"':'')+'>'+ic('wa')+'וואטסאפ</a>'
+     +'<a class="act'+(e?'':' dis')+'" '+(e?'href="mailto:'+esc(e.value)+'"':'')+'>'+ic('mail')+'מייל</a></div>';
+  }
+  var rows='';
+  c.phones.forEach(function(p){rows+=fld(PL[p.label]||'טלפון','<bdi dir="ltr"><a href="'+esc(telHref(p.value))+'">'+esc(p.value)+'</a></bdi>',
+    '<a href="sms:'+esc(String(p.value).replace(/[^\d+]/g,''))+'" title="הודעה">'+ic('sms')+'</a><a href="https://wa.me/'+esc(waNum(p.value))+'" target="_blank" rel="noopener" title="וואטסאפ">'+ic('wa')+'</a>'+copyBtn(p.value))});
+  c.emails.forEach(function(p){rows+=fld(EL[p.label]||'מייל','<bdi dir="ltr"><a href="mailto:'+esc(p.value)+'">'+esc(p.value)+'</a></bdi>',copyBtn(p.value))});
+  if(rows)h+='<div class="block">'+rows+'</div>';
+  var more='';
+  if(c.company)more+=fld('חברה',esc(c.company));
+  if(c.address)more+=fld('כתובת','<span class="notes">'+esc(c.address)+'</span>','<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.address)+'" target="_blank" rel="noopener" title="פתיחה במפה">'+ic('map')+'</a>'+copyBtn(c.address));
+  if(c.website){var u=/^https?:/i.test(c.website)?c.website:'https://'+c.website;more+=fld('אתר','<bdi dir="ltr"><a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(c.website)+'</a></bdi>')}
+  if(c.bday){var n=nextBday(c),a=ageOf(c);more+=fld('יום הולדת',esc(fmtDate(c.bday))+(a!=null?' · גיל '+a:'')+(n!=null?'<div style="color:var(--mut);font-size:13px">'+(n===0?'🎂 היום!':n===1?'מחר':'בעוד '+n+' ימים')+'</div>':''))}
+  if(more)h+='<div class="block">'+more+'</div>';
+  if(c.notes)h+='<div class="block">'+fld('הערות','<div class="notes">'+esc(c.notes)+'</div>')+'</div>';
+  h+='<div class="meta">נוצר '+new Date(c.created).toLocaleDateString('he-IL')+(c.updated>c.created+6e4?' · עודכן '+new Date(c.updated).toLocaleDateString('he-IL'):'')+'</div>';
+  if(!c.deleted)h+='<div style="text-align:center;margin-top:10px"><button class="btn" data-act="copyall" data-id="'+c.id+'">'+ic('copy')+'העתקת כל הפרטים</button></div>';
+  el.innerHTML=h+'</div>';
+}
+
+/* ---------- duplicates ---------- */
+function dupSets(){
+  var l=live(),parent={};
+  function f(x){while(parent[x]!==x)x=parent[x]=parent[parent[x]];return x}
+  l.forEach(function(c){parent[c.id]=c.id});
+  var keys={};
+  function add(k,id,why){if(!k)return;(keys[k]=keys[k]||{ids:[],why:why}).ids.push(id)}
+  l.forEach(function(c){
+    c.phones.forEach(function(p){var d=digits(p.value).replace(/^972/,'0');if(d.length>=7)add('p'+d.slice(-9),c.id,'אותו מספר טלפון')});
+    c.emails.forEach(function(p){add('e'+p.value.trim().toLowerCase(),c.id,'אותו מייל')});
+    var n=fullName(c).toLowerCase().replace(/\s+/g,' ');if(n.indexOf(' ')>-1||n.length>3)add('n'+n,c.id,'אותו שם');
+  });
+  var why={};
+  Object.keys(keys).forEach(function(k){var ids=keys[k].ids.filter(function(x,i,a){return a.indexOf(x)===i});if(ids.length>1){ids.forEach(function(x){parent[f(x)]=f(ids[0])});why[ids[0]]=keys[k].why}});
+  var groups={};l.forEach(function(c){var r=f(c.id);(groups[r]=groups[r]||[]).push(c)});
+  return Object.keys(groups).map(function(r){var g=groups[r];if(g.length<2)return null;var ws=[];Object.keys(keys).forEach(function(k){var ids=keys[k].ids;var inG=ids.filter(function(i){return g.some(function(c){return c.id===i})});if(inG.length>1&&ws.indexOf(keys[k].why)<0)ws.push(keys[k].why)});return{items:g,why:ws}}).filter(Boolean);
+}
+function renderDups(){
+  var sets=dupSets();
+  if(!sets.length){$('list').innerHTML='<div class="empty"><div class="big">'+ic('check')+'</div><h3>לא נמצאו כפילויות</h3><p>הכול נקי ומסודר.</p></div>';$('vt').innerHTML='כפילויות';return}
+  $('vt').innerHTML='כפילויות<small>'+sets.length+'</small>';
+  $('list').innerHTML=sets.map(function(s,i){return '<div class="dup"><div>'+s.why.map(function(w){return '<span class="why">'+esc(w)+'</span>'}).join('')+'</div>'+s.items.map(function(c){return rowHtml(c,{dup:1})}).join('')+'<div class="bar"><button class="btn pri" data-act="merge" data-set="'+i+'">'+ic('merge')+'מיזוג לאיש קשר אחד</button></div></div>'}).join('');
+}
+function mergeContacts(list){
+  var b=list[0];
+  list.slice(1).forEach(function(o){
+    ['first','last','company','jobTitle','address','website','bday','photo'].forEach(function(k){if(!b[k]&&o[k])b[k]=o[k]});
+    o.phones.forEach(function(p){if(!b.phones.some(function(x){return digits(x.value)===digits(p.value)}))b.phones.push(p)});
+    o.emails.forEach(function(p){if(!b.emails.some(function(x){return x.value.toLowerCase()===p.value.toLowerCase()}))b.emails.push(p)});
+    o.groups.forEach(function(g){if(b.groups.indexOf(g)<0)b.groups.push(g)});
+    if(o.notes&&b.notes.indexOf(o.notes)<0)b.notes=(b.notes?b.notes+'\n':'')+o.notes;
+    b.fav=b.fav||o.fav;b.created=Math.min(b.created,o.created);
+    S.contacts.splice(S.contacts.indexOf(o),1);
+  });
+  b.updated=Date.now();return b;
+}
+
+/* ---------- editor ---------- */
+var E=null;
+function selHtml(map,cur){return '<select class="in">'+Object.keys(map).map(function(k){return '<option value="'+k+'"'+(k===cur?' selected':'')+'>'+map[k]+'</option>'}).join('')+'</select>'}
+function multiRow(kind,it){
+  var isP=kind==='phones';
+  return '<div class="mrow">'+selHtml(isP?PL:EL,it.label)+'<input class="in" dir="ltr" style="text-align:right" type="'+(isP?'tel':'email')+'" placeholder="'+(isP?'מספר טלפון':'כתובת מייל')+'" value="'+esc(it.value)+'"><button class="ib" type="button" data-rm aria-label="הסרה">'+ic('x')+'</button></div>';
+}
+function openEditor(id){
+  var c=id?byId(id):null;
+  E=c?JSON.parse(JSON.stringify(c)):blank();E.isNew=!c;
+  if(E.isNew){E.phones=[{label:'mobile',value:''}];E.emails=[]; if(S.view.indexOf('g:')===0)E.groups=[S.view.slice(2)]}
+  var d=$('dlgE');
+  d.innerHTML='<form class="dform" method="dialog" id="eform" novalidate><div class="dh"><h2>'+(E.isNew?'איש קשר חדש':'עריכת איש קשר')+'</h2><button type="button" class="ib" data-close aria-label="סגירה">'+ic('x')+'</button></div><div class="db">'
+   +'<div class="pic"><div id="ePic"></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn" id="ePhoto">'+ic('cam')+'הוספת תמונה</button><button type="button" class="btn" id="ePhotoRm">הסרה</button></div></div>'
+   +'<div class="g2"><div><label class="l" for="eFirst">שם פרטי</label><input class="in" id="eFirst" value="'+esc(E.first)+'"></div><div><label class="l" for="eLast">שם משפחה</label><input class="in" id="eLast" value="'+esc(E.last)+'"></div></div>'
+   +'<div class="g2"><div><label class="l" for="eComp">חברה / מוסד</label><input class="in" id="eComp" value="'+esc(E.company)+'"></div><div><label class="l" for="eJob">תפקיד</label><input class="in" id="eJob" value="'+esc(E.jobTitle)+'"></div></div>'
+   +'<label class="l">טלפונים</label><div class="multi" id="eP"></div><button type="button" class="add" data-add="phones">'+ic('plus')+'הוספת טלפון</button>'
+   +'<label class="l">מיילים</label><div class="multi" id="eM"></div><button type="button" class="add" data-add="emails">'+ic('plus')+'הוספת מייל</button>'
+   +'<label class="l" for="eAdr">כתובת</label><textarea class="in" id="eAdr" style="min-height:58px">'+esc(E.address)+'</textarea>'
+   +'<div class="g2"><div><label class="l" for="eWeb">אתר</label><input class="in" dir="ltr" style="text-align:right" id="eWeb" value="'+esc(E.website)+'"></div><div><label class="l" for="eBd">יום הולדת</label><input class="in" type="date" id="eBd" value="'+(E.bday&&E.bday.slice(0,4)>NOYEAR?esc(E.bday):'')+'"></div></div>'
+   +'<label class="l">קבוצות</label><div class="gpick" id="eG">'+(S.groups.length?S.groups.map(function(g){return '<label><input type="checkbox" value="'+g.id+'"'+(E.groups.indexOf(g.id)>-1?' checked':'')+'><span class="gdot" style="background:'+g.color+'"></span>'+esc(g.name)+'</label>'}).join(''):'<span style="color:var(--mut);font-size:13px">אין קבוצות. אפשר ליצור בתפריט הצד.</span>')+'</div>'
+   +'<label class="l" for="eNotes">הערות</label><textarea class="in" id="eNotes">'+esc(E.notes)+'</textarea>'
+   +'</div><div class="df"><span class="err" id="eErr"></span><button type="button" class="btn" data-close>ביטול</button><button type="submit" class="btn pri">שמירה</button></div></form>';
+  paintPic();fillMulti();
+  d.showModal();setTimeout(function(){$('eFirst').focus()},30);
+}
+function paintPic(){$('ePic').innerHTML=avatar(Object.assign({},E,{first:$('eFirst')?$('eFirst').value:E.first,last:$('eLast')?$('eLast').value:E.last}));$('ePhotoRm').hidden=!E.photo}
+function fillMulti(){
+  $('eP').innerHTML=E.phones.map(function(p){return multiRow('phones',p)}).join('');
+  $('eM').innerHTML=E.emails.map(function(p){return multiRow('emails',p)}).join('');
+}
+function readMulti(box){return Array.prototype.map.call(box.querySelectorAll('.mrow'),function(r){return{label:r.querySelector('select').value,value:r.querySelector('input').value.trim()}})}
+function collect(){
+  E.first=$('eFirst').value.trim();E.last=$('eLast').value.trim();E.company=$('eComp').value.trim();E.jobTitle=$('eJob').value.trim();
+  E.phones=readMulti($('eP'));E.emails=readMulti($('eM'));
+  E.address=$('eAdr').value.trim();E.website=$('eWeb').value.trim();E.bday=$('eBd').value||(E.bday&&E.bday.slice(0,4)===NOYEAR?E.bday:'');E.notes=$('eNotes').value.trim();
+  E.groups=Array.prototype.map.call($('eG').querySelectorAll('input:checked'),function(i){return i.value});
+}
+function saveEditor(){
+  collect();
+  var ph=E.phones.filter(function(p){return p.value}),em=E.emails.filter(function(p){return p.value});
+  if(!E.first&&!E.last&&!E.company&&!ph.length&&!em.length){$('eErr').textContent='יש למלא לפחות שם, חברה, טלפון או מייל';return}
+  var badE=em.filter(function(p){return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.value)})[0];
+  if(badE){$('eErr').textContent='כתובת מייל לא תקינה: '+badE.value;return}
+  E.phones=ph;E.emails=em;E.updated=Date.now();
+  snap();
+  var isNew=E.isNew;delete E.isNew;
+  if(isNew){S.contacts.push(E)}else{var i=S.contacts.indexOf(byId(E.id));S.contacts[i]=E}
+  S.sel=E.id;
+  if(S.view==='trash'||S.view==='dups')S.view='all';
+  $('dlgE').close();
+  done(isNew?'איש הקשר נוסף':'השינויים נשמרו');
+  showDetail();
+  var r=document.querySelector('.row[data-id="'+E.id+'"]');if(r)r.scrollIntoView({block:'nearest'});
+  E=null;
+}
+function resizePhoto(file,cb){
+  var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){
+    var s=256,cv=document.createElement('canvas');cv.width=cv.height=s;var x=cv.getContext('2d');
+    var m=Math.min(im.width,im.height),sx=(im.width-m)/2,sy=(im.height-m)/2;x.drawImage(im,sx,sy,m,m,0,0,s,s);cb(cv.toDataURL('image/jpeg',.82))};
+    im.onerror=function(){toast('לא ניתן לקרוא את התמונה')};im.src=fr.result};fr.readAsDataURL(file);
+}
+
+/* ---------- groups ---------- */
+function groupDialog(g){
+  var d=$('dlgG');
+  d.innerHTML='<form method="dialog" class="dform" id="gform"><div class="dh"><h2>'+(g?'עריכת קבוצה':'קבוצה חדשה')+'</h2></div><div class="db"><label class="l" for="gName" style="margin-top:0">שם הקבוצה</label><input class="in" id="gName" value="'+esc(g?g.name:'')+'" maxlength="40" autocomplete="off"></div><div class="df">'+(g?'<button type="button" class="btn bad" id="gDel" style="margin-inline-end:auto">מחיקת קבוצה</button>':'')+'<button type="button" class="btn" data-close>ביטול</button><button class="btn pri" type="submit">שמירה</button></div></form>';
+  d.showModal();$('gName').focus();$('gName').select();
+  $('gform').onsubmit=function(e){e.preventDefault();var n=$('gName').value.trim();if(!n)return;
+    if(S.groups.some(function(x){return x!==g&&x.name===n})){toast('קבוצה בשם הזה כבר קיימת');return}
+    snap();if(g)g.name=n;else{g={id:uid(),name:n,color:GCOL[S.groups.length%GCOL.length]};S.groups.push(g)}
+    d.close();if(!S.view||S.view==='all'&&!g)S.view='all';done('הקבוצה נשמרה')};
+  if(g)$('gDel').onclick=function(){snap();S.groups=S.groups.filter(function(x){return x!==g});S.contacts.forEach(function(c){c.groups=c.groups.filter(function(i){return i!==g.id})});if(S.view==='g:'+g.id)S.view='all';d.close();done('הקבוצה נמחקה (אנשי הקשר נשארו)')};
+}
+function pickGroup(ids){
+  var d=$('dlgP');
+  if(!S.groups.length){toast('אין קבוצות. צרו קבוצה בתפריט הצד.');return}
+  d.innerHTML='<div class="dform"><div class="dh"><h2>הוספה לקבוצה</h2><button class="ib" data-close aria-label="סגירה">'+ic('x')+'</button></div><div class="db"><div class="plist">'+S.groups.map(function(g){return '<button data-g="'+g.id+'"><span class="gdot" style="background:'+g.color+'"></span>'+esc(g.name)+'</button>'}).join('')+'</div></div></div>';
+  d.showModal();
+  d.onclick=function(e){var b=e.target.closest('[data-g]');if(!b)return;snap();ids.forEach(function(i){var c=byId(i);if(c&&c.groups.indexOf(b.dataset.g)<0)c.groups.push(b.dataset.g)});d.close();endSel();done('נוספו '+ids.length+' אנשי קשר לקבוצה')};
+}
+
+/* ---------- vCard / CSV ---------- */
+function vEsc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}
+function toVcf(list){
+  return list.map(function(c){
+    var L=['BEGIN:VCARD','VERSION:3.0','N:'+vEsc(c.last)+';'+vEsc(c.first)+';;;','FN:'+vEsc(title(c))];
+    if(c.company)L.push('ORG:'+vEsc(c.company));if(c.jobTitle)L.push('TITLE:'+vEsc(c.jobTitle));
+    var tm={mobile:'CELL',home:'HOME',work:'WORK',main:'VOICE',fax:'FAX',other:'VOICE'};
+    c.phones.forEach(function(p){L.push('TEL;TYPE='+(tm[p.label]||'VOICE')+':'+p.value)});
+    c.emails.forEach(function(p){L.push('EMAIL;TYPE='+(p.label==='work'?'WORK':p.label==='personal'?'HOME':'OTHER')+':'+p.value)});
+    if(c.address)L.push('ADR;TYPE=HOME:;;'+vEsc(c.address.replace(/\n/g,', '))+';;;;');
+    if(c.website)L.push('URL:'+c.website);
+    if(c.bday)L.push('BDAY:'+(c.bday.slice(0,4)===NOYEAR?'--'+c.bday.slice(5):c.bday));
+    if(c.notes)L.push('NOTE:'+vEsc(c.notes));
+    var gn=c.groups.map(function(i){var g=groupById(i);return g?vEsc(g.name):''}).filter(Boolean);if(gn.length)L.push('CATEGORIES:'+gn.join(','));
+    if(c.fav)L.push('X-FAVORITE:1');
+    if(c.photo&&c.photo.indexOf('data:image/jpeg;base64,')===0)L.push('PHOTO;ENCODING=b;TYPE=JPEG:'+c.photo.slice(23));
+    L.push('END:VCARD');return L.join('\r\n');
+  }).join('\r\n')+'\r\n';
+}
+function vUn(s){return String(s||'').replace(/\\n/gi,'\n').replace(/\\([,;\\])/g,'$1')}
+function vSplit(s){var out=[],cur='',i;for(i=0;i<s.length;i++){if(s[i]==='\\'){cur+=s[i]+(s[i+1]||'');i++}else if(s[i]===';'){out.push(cur);cur=''}else cur+=s[i]}out.push(cur);return out}
+function qpDecode(s){try{var b=s.replace(/=\r?\n/g,'').replace(/=([0-9A-F]{2})/gi,function(_,h){return '%'+h});return decodeURIComponent(b)}catch(e){return s}}
+function fromVcf(text){
+  text=text.replace(/\r\n?/g,'\n').replace(/=\n(?=[^\n]*$)/gm,'=\n').replace(/\n[ \t]/g,'');
+  var cards=text.split(/BEGIN:VCARD/i).slice(1),out=[];
+  cards.forEach(function(blk){
+    blk=blk.split(/END:VCARD/i)[0];var c=blank();var lines=blk.split('\n');
+    // join quoted-printable soft breaks
+    var ls=[];lines.forEach(function(l){if(ls.length&&/ENCODING=QUOTED-PRINTABLE/i.test(ls[ls.length-1])&&/=$/.test(ls[ls.length-1]))ls[ls.length-1]=ls[ls.length-1].slice(0,-1)+l;else ls.push(l)});
+    var fn='';
+    ls.forEach(function(line){
+      var ix=line.indexOf(':');if(ix<1)return;var head=line.slice(0,ix),val=line.slice(ix+1);
+      var parts=head.split(';'),name=parts[0].toUpperCase().replace(/^.*\./,''),params=parts.slice(1).join(';').toUpperCase();
+      if(/QUOTED-PRINTABLE/.test(params))val=qpDecode(val);
+      switch(name){
+        case 'N':var n=vSplit(val);c.last=vUn(n[0]).trim();c.first=[vUn(n[1]),vUn(n[2])].filter(Boolean).join(' ').trim();break;
+        case 'FN':fn=vUn(val).trim();break;
+        case 'ORG':c.company=vSplit(val).map(vUn).filter(Boolean).join(' - ');break;
+        case 'TITLE':c.jobTitle=vUn(val);break;
+        case 'TEL':var l=/CELL|MOBILE/.test(params)?'mobile':/FAX/.test(params)?'fax':/HOME/.test(params)?'home':/WORK/.test(params)?'work':/PREF|MAIN/.test(params)?'main':'other';c.phones.push({label:l,value:val.replace(/^tel:/i,'').trim()});break;
+        case 'EMAIL':c.emails.push({label:/WORK/.test(params)?'work':/HOME|INTERNET/.test(params)&&!/OTHER/.test(params)?'personal':'other',value:val.trim()});break;
+        case 'ADR':c.address=c.address||vSplit(val).map(vUn).filter(Boolean).join(', ');break;
+        case 'URL':c.website=c.website||val.trim();break;
+        case 'BDAY':var m=val.replace(/-/g,'').match(/^(\d{4})?(\d\d)(\d\d)/);if(m)c.bday=(m[1]||NOYEAR)+'-'+m[2]+'-'+m[3];break;
+        case 'NOTE':c.notes=vUn(val);break;
+        case 'CATEGORIES':c._cats=vSplit(val.replace(/,/g,';')).map(vUn).map(function(x){return x.trim()}).filter(Boolean);break;
+        case 'X-FAVORITE':c.fav=val.trim()==='1';break;
+        case 'PHOTO':if(/ENCODING=B|BASE64/.test(params)){var tp=/PNG/.test(params)?'png':/GIF/.test(params)?'gif':'jpeg';c.photo='data:image/'+tp+';base64,'+val.replace(/\s/g,'')}else if(/^data:image/.test(val))c.photo=val;break;
+      }
+    });
+    if(!c.first&&!c.last&&fn){var w=fn.split(/\s+/);c.first=w.shift();c.last=w.join(' ')}
+    if(c.first||c.last||c.company||c.phones.length||c.emails.length)out.push(c);
+  });
+  return out;
+}
+function csvParse(t){
+  t=t.replace(/^\uFEFF/,'');var rows=[],row=[],cur='',q=false,i,ch;
+  var delim=(t.split('\n')[0].match(/;/g)||[]).length>(t.split('\n')[0].match(/,/g)||[]).length?';':',';
+  for(i=0;i<t.length;i++){ch=t[i];
+    if(q){if(ch==='"'){if(t[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}
+    else if(ch==='"')q=true;else if(ch===delim){row.push(cur);cur=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&t[i+1]==='\n')i++;row.push(cur);cur='';rows.push(row);row=[]}
+    else cur+=ch}
+  if(cur!==''||row.length){row.push(cur);rows.push(row)}
+  return rows.filter(function(r){return r.some(function(x){return x.trim()})});
+}
+function fromCsv(text){
+  var rows=csvParse(text);if(rows.length<2)return[];
+  var H=rows[0].map(function(h){return h.trim().toLowerCase()});
+  function find(re){for(var i=0;i<H.length;i++)if(re.test(H[i]))return i;return -1}
+  function findAll(re){var o=[];H.forEach(function(h,i){if(re.test(h))o.push(i)});return o}
+  var iF=find(/^(first name|given name|שם פרטי|first)$/),iL=find(/^(last name|family name|surname|שם משפחה|last)$/),iN=find(/^(name|full name|שם|שם מלא|display name)$/);
+  var iC=find(/^(company|organization|organization name|organization 1 - name|חברה|מוסד|ארגון)/),iJ=find(/^(job title|title|organization 1 - title|תפקיד)/);
+  var iP=findAll(/phone|tel|mobile|טלפון|נייד|פלאפון|סלולרי/).filter(function(i){return !/type|label|סוג/.test(H[i])}),iM=findAll(/e-?mail|מייל|דוא/).filter(function(i){return !/type|label|סוג/.test(H[i])});
+  var iA=find(/address|כתובת/),iW=find(/website|url|אתר/),iB=find(/birthday|bday|יום הולדת|תאריך לידה/),iNo=find(/notes?|הערות|הערה/),iG=find(/labels?|groups?|categories|קבוצ/);
+  var out=[];
+  rows.slice(1).forEach(function(r){
+    var c=blank(),g=function(i){return i>-1&&r[i]?String(r[i]).trim():''};
+    c.first=g(iF);c.last=g(iL);if(!c.first&&!c.last&&g(iN)){var w=g(iN).split(/\s+/);c.first=w.shift();c.last=w.join(' ')}
+    c.company=g(iC);c.jobTitle=g(iJ);c.address=g(iA);c.website=g(iW);c.notes=g(iNo);
+    iP.forEach(function(i){String(r[i]||'').split(/\s*:::\s*/).forEach(function(v){v=v.trim();if(v)c.phones.push({label:'mobile',value:v})})});
+    iM.forEach(function(i){String(r[i]||'').split(/\s*:::\s*/).forEach(function(v){v=v.trim();if(v)c.emails.push({label:'personal',value:v})})});
+    var b=g(iB);var m=b.match(/^(\d{4})-(\d\d)-(\d\d)/)||b.match(/^(\d\d?)[\/.](\d\d?)[\/.](\d{4})$/);
+    if(m){c.bday=m[1].length===4?m[1]+'-'+m[2]+'-'+m[3]:m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2)}
+    var gs=g(iG);if(gs)c._cats=gs.split(/\s*:::\s*|\s*;\s*/).map(function(x){return x.replace(/^\*\s*/,'').trim()}).filter(function(x){return x&&x!=='myContacts'});
+    if(c.first||c.last||c.company||c.phones.length||c.emails.length)out.push(c);
+  });
+  return out;
+}
+function csvCell(s){s=String(s==null?'':s);return /[",\n\r;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function toCsv(list){
+  var maxP=Math.max.apply(null,[1].concat(list.map(function(c){return c.phones.length}))),maxE=Math.max.apply(null,[1].concat(list.map(function(c){return c.emails.length})));
+  var h=['שם פרטי','שם משפחה','חברה','תפקיד'],i;for(i=1;i<=maxP;i++)h.push('טלפון '+i);for(i=1;i<=maxE;i++)h.push('מייל '+i);h=h.concat(['כתובת','אתר','יום הולדת','קבוצות','מועדף','הערות']);
+  var rows=[h.map(csvCell).join(',')];
+  list.forEach(function(c){var r=[c.first,c.last,c.company,c.jobTitle];for(i=0;i<maxP;i++)r.push(c.phones[i]?c.phones[i].value:'');for(i=0;i<maxE;i++)r.push(c.emails[i]?c.emails[i].value:'');
+    r=r.concat([c.address,c.website,c.bday&&c.bday.slice(0,4)>NOYEAR?c.bday:c.bday?c.bday.slice(5):'',c.groups.map(function(g){var x=groupById(g);return x?x.name:''}).filter(Boolean).join(';'),c.fav?'כן':'',c.notes]);rows.push(r.map(csvCell).join(','))});
+  return '\uFEFF'+rows.join('\r\n');
+}
+function download(name,text,type){var a=document.createElement('a'),u=URL.createObjectURL(new Blob([text],{type:type+';charset=utf-8'}));a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},500)}
+function stamp(){return new Date().toISOString().slice(0,10)}
+function exportAs(fmt,list){
+  list=list||live();if(!list.length){toast('אין אנשי קשר לייצוא');return}
+  if(fmt==='vcf')download('contacts-'+stamp()+'.vcf',toVcf(list),'text/vcard');
+  else if(fmt==='csv')download('contacts-'+stamp()+'.csv',toCsv(list),'text/csv');
+  else download('contacts-backup-'+stamp()+'.json',JSON.stringify({app:'contacts',v:1,contacts:list,groups:S.groups}),'application/json');
+  toast('הקובץ ירד ('+list.length+' אנשי קשר)');
+}
+function importText(name,text){
+  var list=[];
+  try{
+    if(/\.json$/i.test(name)||/^\s*[{\[]/.test(text)){var d=JSON.parse(text);var arr=Array.isArray(d)?d:d.contacts||[];(d.groups||[]).forEach(function(g){});
+      list=arr.map(function(c){c=fixC(c);c._gnames=(c.groups||[]).map(function(i){var g=(d.groups||[]).filter(function(x){return x.id===i})[0];return g&&g.name}).filter(Boolean);c.groups=[];c._cats=c._gnames;delete c._gnames;return c})}
+    else if(/\.csv$/i.test(name))list=fromCsv(text);
+    else list=fromVcf(text);
+  }catch(e){toast('הקובץ לא תקין: '+e.message);return}
+  if(!list.length){toast('לא נמצאו אנשי קשר בקובץ');return}
+  snap();var added=0,skipped=0;
+  list.forEach(function(c){
+    var exists=live().some(function(o){return fullName(o)===fullName(c)&&o.phones.map(function(p){return digits(p.value)}).join()===c.phones.map(function(p){return digits(p.value)}).join()&&o.emails.length===c.emails.length});
+    if(exists){skipped++;return}
+    var cats=c._cats||[];delete c._cats;
+    cats.forEach(function(n){var g=S.groups.filter(function(x){return x.name===n})[0];if(!g){g={id:uid(),name:n,color:GCOL[S.groups.length%GCOL.length]};S.groups.push(g)}if(c.groups.indexOf(g.id)<0)c.groups.push(g.id)});
+    c.id=uid();c.created=c.created||Date.now();c.updated=Date.now();delete c.deleted;S.contacts.push(c);added++;
+  });
+  done('יובאו '+added+' אנשי קשר'+(skipped?' ('+skipped+' כפולים דולגו)':''));
+}
+function readFiles(files){Array.prototype.forEach.call(files,function(f){var fr=new FileReader();fr.onload=function(){importText(f.name,String(fr.result))};fr.readAsText(f)})}
+
+/* ---------- actions ---------- */
+function showDetail(){document.body.classList.add('showd');renderList();renderDetail()}
+function renderAll(){renderSide();renderList();renderDetail();updateSearchUI()}
+function updateSearchUI(){$('sbox').classList.toggle('has',!!$('q').value)}
+function endSel(){S.selmode=false;S.picked={};renderList()}
+function copy(t,msg){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast(msg||'הועתק')}).catch(function(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast(msg||'הועתק')}catch(e){}a.remove()})}
+function allText(c){var L=[title(c)];if(c.company&&fullName(c))L.push(c.company);c.phones.forEach(function(p){L.push((PL[p.label]||'טלפון')+': '+p.value)});c.emails.forEach(function(p){L.push(p.value)});if(c.address)L.push(c.address);if(c.website)L.push(c.website);return L.join('\n')}
+function pickedIds(){return Object.keys(S.picked)}
+function trashIds(ids){snap();var t=Date.now();ids.forEach(function(i){var c=byId(i);if(c){c.deleted=t;c.fav=c.fav}});if(S.sel&&ids.indexOf(S.sel)>-1){S.sel=null;document.body.classList.remove('showd')}}
+
+var A={
+ 'new':function(){openEditor()},
+ edit:function(b){openEditor(b.dataset.id)},
+ fav:function(b){var c=byId(b.dataset.id);c.fav=!c.fav;c.updated=Date.now();save();renderAll()},
+ del:function(b){trashIds([b.dataset.id]);done('איש הקשר הועבר לפח')},
+ restore:function(b){snap();var c=byId(b.dataset.id);delete c.deleted;if(S.view==='trash'){S.sel=null;document.body.classList.remove('showd')}done('איש הקשר שוחזר')},
+ purge:function(b){if(!confirm('למחוק לצמיתות? לא ניתן לשחזר.'))return;S.contacts=S.contacts.filter(function(c){return c.id!==b.dataset.id});S.sel=null;document.body.classList.remove('showd');save();renderAll();toast('נמחק לצמיתות')},
+ 'empty-trash':function(){if(!confirm('לרוקן את הפח? המחיקה סופית.'))return;S.contacts=S.contacts.filter(function(c){return !c.deleted});S.sel=null;save();renderAll();toast('הפח רוקן')},
+ vcf1:function(b){var c=byId(b.dataset.id);download(title(c).replace(/[\\/:*?"<>|]/g,'')+'.vcf',toVcf([c]),'text/vcard')},
+ copyall:function(b){copy(allText(byId(b.dataset.id)),'הפרטים הועתקו')},
+ closed:function(){document.body.classList.remove('showd')},
+ selmode:function(){S.selmode=!S.selmode;S.picked={};renderList()},
+ selall:function(){filtered().forEach(function(c){S.picked[c.id]=1});renderList()},
+ 'bulk-del':function(){var ids=pickedIds();if(!ids.length)return;trashIds(ids);endSel();done(ids.length+' אנשי קשר הועברו לפח')},
+ 'bulk-restore':function(){var ids=pickedIds();if(!ids.length)return;snap();ids.forEach(function(i){delete byId(i).deleted});endSel();done('שוחזרו '+ids.length)},
+ 'bulk-purge':function(){var ids=pickedIds();if(!ids.length||!confirm('למחוק '+ids.length+' אנשי קשר לצמיתות?'))return;S.contacts=S.contacts.filter(function(c){return ids.indexOf(c.id)<0});endSel();save();renderAll();toast('נמחקו לצמיתות')},
+ 'bulk-group':function(){var ids=pickedIds();if(ids.length)pickGroup(ids)},
+ 'bulk-export':function(){var ids=pickedIds();if(ids.length)exportAs('vcf',ids.map(byId))},
+ newgroup:function(){groupDialog()},
+ import:function(){$('file').click()},
+ merge:function(b){var set=dupSets()[+b.dataset.set];if(!set)return;snap();var m=mergeContacts(set.items.slice());S.sel=m.id;done('אנשי הקשר מוזגו')}
+};
+
+document.addEventListener('click',function(e){
+  var t=e.target;
+  var m=t.closest('[data-act]');
+  if(m&&A[m.dataset.act]){closeMenu();A[m.dataset.act](m);return}
+  var cp=t.closest('[data-copy]');if(cp){copy(cp.dataset.copy);return}
+  var v=t.closest('[data-view]');if(v){S.view=v.dataset.view;S.sel=null;S.picked={};document.body.classList.remove('side','showd');$('list').scrollTop=0;renderAll();return}
+  var az=t.closest('[data-az]');if(az){var s=$('sec-'+az.dataset.az);if(s)$('list').scrollTo({top:s.offsetTop-4});return}
+  var cl=t.closest('[data-close]');if(cl){var d=cl.closest('dialog');if(d)d.close();return}
+  var r=t.closest('.row[data-id]');
+  if(r&&!r.closest('.dup')){var id=r.dataset.id;if(S.selmode){if(S.picked[id])delete S.picked[id];else S.picked[id]=1;renderList()}else{S.sel=id;showDetail()}return}
+  if(!t.closest('#menu')&&!t.closest('#menuBtn'))closeMenu();
+});
+document.addEventListener('keydown',function(e){
+  var tag=(e.target.tagName||'').toLowerCase();
+  if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('row')){e.target.click();return}
+  if(tag==='input'||tag==='textarea'||tag==='select'){if(e.key==='Escape'&&e.target.id==='q'){e.target.value='';S.q='';renderAll();e.target.blur()}return}
+  if(document.querySelector('dialog[open]'))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='/'){e.preventDefault();$('q').focus()}
+  else if(e.key==='n'||e.key==='N'||e.key==='מ'&&false){e.preventDefault();openEditor()}
+  else if(e.key==='Escape'){if(S.selmode)endSel();else{closeMenu();document.body.classList.remove('side','showd')}}
+  else if(e.key==='Delete'&&S.sel&&byId(S.sel)&&!byId(S.sel).deleted){trashIds([S.sel]);done('איש הקשר הועבר לפח')}
+});
+
+/* editor events */
+$('dlgE').addEventListener('click',function(e){
+  if(e.target===this){return}
+  var b=e.target.closest('[data-add]');if(b){collect();E[b.dataset.add].push({label:b.dataset.add==='phones'?'mobile':'personal',value:''});fillMulti();var inp=$(b.dataset.add==='phones'?'eP':'eM').querySelector('.mrow:last-child input');if(inp)inp.focus();return}
+  var rm=e.target.closest('[data-rm]');if(rm){collect();var row=rm.closest('.mrow'),box=row.parentNode,i=Array.prototype.indexOf.call(box.children,row);E[box.id==='eP'?'phones':'emails'].splice(i,1);fillMulti();return}
+  if(e.target.id==='ePhoto'||e.target.closest('#ePhoto'))$('photoIn').click();
+  if(e.target.id==='ePhotoRm'){E.photo='';paintPic()}
+});
+$('dlgE').addEventListener('input',function(e){if(e.target.id==='eFirst'||e.target.id==='eLast'){collect();paintPic()}});
+$('dlgE').addEventListener('submit',function(e){e.preventDefault();saveEditor()});
+$('dlgE').addEventListener('cancel',function(e){});
+$('photoIn').onchange=function(){var f=this.files[0];this.value='';if(f&&E)resizePhoto(f,function(u){collect();E.photo=u;paintPic()})};
+
+/* search */
+var qT;$('q').addEventListener('input',function(){clearTimeout(qT);var v=this.value;updateSearchUI();qT=setTimeout(function(){S.q=v;renderList()},90)});
+$('qx').onclick=function(){$('q').value='';S.q='';renderAll();$('q').focus()};
+
+/* menu */
+function menuHtml(){
+  return '<div class="lbl">מיון לפי</div><button data-sort="first" class="'+(S.sortBy==='first'?'cur':'')+'">'+ic('sort')+'שם פרטי</button><button data-sort="last" class="'+(S.sortBy==='last'?'cur':'')+'">'+ic('sort')+'שם משפחה</button><hr>'
+   +'<button data-act="import">'+ic('ul')+'ייבוא (vCard / CSV / גיבוי)</button><div class="lbl">ייצוא כל אנשי הקשר</div>'
+   +'<button data-exp="vcf">'+ic('dl')+'vCard (‎.vcf)</button><button data-exp="csv">'+ic('dl')+'אקסל / CSV</button><button data-exp="json">'+ic('dl')+'קובץ גיבוי (JSON)</button><hr>'
+   +'<button data-pr="1">'+ic('print')+'הדפסת איש הקשר הנוכחי</button>';
+}
+function closeMenu(){$('menu').hidden=true}
+$('menuBtn').onclick=function(e){e.stopPropagation();var m=$('menu');if(m.hidden){m.innerHTML=menuHtml();m.hidden=false}else m.hidden=true};
+$('menu').addEventListener('click',function(e){
+  var s=e.target.closest('[data-sort]');if(s){S.sortBy=s.dataset.sort;save();closeMenu();renderList();return}
+  var x=e.target.closest('[data-exp]');if(x){closeMenu();exportAs(x.dataset.exp);return}
+  if(e.target.closest('[data-pr]')){closeMenu();if(S.sel)window.print();else toast('בחרו איש קשר להדפסה')}
+});
+$('burger').onclick=function(){document.body.classList.toggle('side')};
+$('scrim').onclick=function(){document.body.classList.remove('side')};
+
+/* import: file + drag-drop */
+$('file').onchange=function(){if(this.files.length)readFiles(this.files);this.value=''};
+var dd=0;
+function hasF(e){return e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>-1}
+addEventListener('dragenter',function(e){if(!hasF(e))return;e.preventDefault();dd++;$('drop').classList.add('on')});
+addEventListener('dragleave',function(){dd=Math.max(0,dd-1);if(!dd)$('drop').classList.remove('on')});
+addEventListener('dragover',function(e){e.preventDefault()});
+addEventListener('drop',function(e){e.preventDefault();dd=0;$('drop').classList.remove('on');if(e.dataTransfer.files.length)readFiles(e.dataTransfer.files)});
+
+/* group rename from header */
+$('vt').addEventListener('dblclick',function(){if(S.view.indexOf('g:')===0)groupDialog(groupById(S.view.slice(2)))});
+$('side').addEventListener('dblclick',function(e){var v=e.target.closest('[data-view^="g:"]');if(v)groupDialog(groupById(v.dataset.view.slice(2)))});
+
+load();
+if(!S.contacts.length&&!localStorage.getItem(KEY)){/* empty start */}
+renderAll();
+window.addEventListener('storage',function(e){if(e.key===KEY){load();renderAll()}});
+})();
+</script>
+</body>
+</html>
