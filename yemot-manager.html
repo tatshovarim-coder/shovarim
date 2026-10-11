@@ -185,6 +185,8 @@ dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
 <dialog id="dlgH"><div class="dh"><h2>חזרה לגרסה קודמת</h2></div><p class="hint" style="margin:0">נשמרת גרסה בכל העתקה, הורדה וטעינת קוד. לחיצה על "שחזור" מחליפה את העבודה הנוכחית (גם היא נשמרת, אפשר לחזור אליה).</p><div class="vlist" id="vlist"></div><div class="tb" style="justify-content:flex-end"><button class="s" onclick="$('dlgH').close()">סגירה</button></div></dialog>
 <div id="toast"></div>
 <script src="site.js"></script>
+<script src="firebase-config.js"></script>
+<script src="sync.js"></script>
 <script type="text/plain" id="tpl">// ===== הגדרות (נוצר ע"י מנהל השלוחות – אפשר לטעון קוד זה שוב לכלי) =====
 /*CONFIG_START*/
 var CONFIG = __CONFIG__;
@@ -400,9 +402,9 @@ function lsg(k){try{return localStorage.getItem(k)}catch(z){return null}}
 function lss(k,v){try{localStorage.setItem(k,v)}catch(z){}}
 function dirty(){return BASE!==CODE}
 function upd(){var d=$("dirty");if(d)d.classList.toggle("on",dirty())}
-function setBase(){BASE=CODE;lss('yemotBase',CODE);upd();side()}
+function setBase(){BASE=CODE;lss('yemotBase',CODE);rSet('base',CODE);upd();side()}
 function hist(){try{return JSON.parse(lsg('yemotHist')||'[]')}catch(z){return []}}
-function snap(why){var h=hist(),j=JSON.stringify(cfg);if(h.length&&JSON.stringify(h[0].cfg)===j){h[0].t=Date.now();h[0].why=why}else h.unshift({t:Date.now(),why:why,cfg:JSON.parse(j)});lss('yemotHist',JSON.stringify(h.slice(0,15)))}
+function snap(why){var h=hist(),j=JSON.stringify(cfg);if(h.length&&JSON.stringify(h[0].cfg)===j){h[0].t=Date.now();h[0].why=why}else h.unshift({t:Date.now(),why:why,cfg:JSON.parse(j)});var hs=JSON.stringify(h.slice(0,15));lss('yemotHist',hs);rSet('hist',hs)}
 function fmtT(t){var d=new Date(t);return d.toLocaleDateString('he-IL')+' '+d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}
 function openHist(){var h=hist(),b=$("vlist");b.innerHTML=h.length?h.map(function(v,i){return '<div class="vrow"><div class="vt"><strong>'+fmtT(v.t)+'</strong><em>'+esc(v.why)+' · '+v.cfg.extensions.length+' שלוחות</em></div><button class="s" onclick="restore('+i+')">שחזור</button></div>'}).join(''):'<div class="vempty">עדיין אין גרסאות שמורות. הן נוצרות כשמעתיקים, מורידים או טוענים קוד.</div>';$("dlgH").showModal()}
 function restore(i){var v=hist()[i];if(!v)return;snap('לפני שחזור');var h=hist();cfg=JSON.parse(JSON.stringify(v.cfg));if(sel!=='g'&&sel!=='code')sel='g';else if(sel==='code'){}gen();main();$("dlgH").close();toast("הגרסה שוחזרה")}
@@ -470,7 +472,7 @@ function pv(){var p=$("pv"),f=$("fl");
  var d=new Date(),dt=Utilities.formatDate(d,"Asia/Jerusalem","dd/MM/yyyy"),hd=getHebrewDate(d),tm=Utilities.formatDate(d,"Asia/Jerusalem","HH:mm:ss");
  p.innerHTML='<div class="pv"><div class="sub">אישור שובר - '+esc(x.store||"חנות")+(b?' | סניף '+esc(b):'')+' | טלפון: 0501234567'+(cfg.suffix?' | '+esc(cfg.suffix):'')+' | '+tm+'</div><div class="box"><h4>'+esc(cfg.heading)+'</h4><div>שלום וברכה,<br>התקבל אישור רכישת שובר במערכת.</div>'+(x.note?'<div style="margin-top:6px">'+esc(x.note)+'</div>':'')+
   '<div class="in"><div><span>שם הלקוח:</span> <b>ישראל ישראלי</b></div><div><span>טלפון הלקוח:</span> <b>0501234567</b></div><div><span>זכאות:</span> <b>'+esc(x.eligibility)+'</b></div>'+(b?'<div><span>סניף:</span> <b>'+esc(b)+'</b></div>':'')+'<div><span>תאריך:</span> <b>'+dt+' | '+esc(hd)+'</b></div><div><span>שעה:</span> <b>'+tm+'</b></div></div><div style="color:#6c757d">בברכה,<br><b>'+esc(cfg.footer)+'</b></div></div></div>'}
-function gen(){srt();CODE=$("tpl").textContent.replace("__CONFIG__",function(){return JSON.stringify(cfg,null,2)});side();upd();if($("code"))fillCode();try{localStorage.setItem('yemotCfg',JSON.stringify(cfg))}catch(z){}if(ready)ping()}
+function gen(){srt();CODE=$("tpl").textContent.replace("__CONFIG__",function(){return JSON.stringify(cfg,null,2)});side();upd();if($("code"))fillCode();try{localStorage.setItem('yemotCfg',JSON.stringify(cfg))}catch(z){}pushCfg();if(ready)ping()}
 function copyCode(){var done=function(){snap("העתקת קוד");setBase();toast("הקוד הועתק");var b=$("cpb");if(b){b.textContent="הועתק ✓";setTimeout(function(){b.textContent="העתקת הקוד"},1600)}};if(navigator.clipboard)navigator.clipboard.writeText(CODE).then(done,function(){fb()});else fb();
  function fb(){var t=document.createElement("textarea");t.value=CODE;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();done()}}
 function dlCode(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([CODE],{type:"text/javascript"}));a.download="Code.gs";a.click();snap("הורדת קוד");setBase()}
@@ -484,4 +486,40 @@ $("drop").ondrop=function(e){e.preventDefault();this.classList.remove("on");if(e
 var sv=null;try{sv=JSON.parse(localStorage.getItem('yemotCfg')||'null')}catch(z){}
 if(sv&&sv.extensions&&sv.extensions.length){cfg=sv;gen();var b0=lsg('yemotBase');BASE=b0===null?'':b0;upd();side();main();toast("נטענה העבודה האחרונה שלך")}else{gen();BASE=CODE;upd();main();$("dlg").showModal()}
 ready=true;
+
+/* ---------- Firebase sync (שיתוף בין כל המשתמשים) ---------- */
+var lastCfg='',pending=null,syncOn=false,hadLocal=!!(sv&&sv.extensions&&sv.extensions.length);
+function rSet(k,v){if(syncOn)YSync.set('yemot/'+k,v).catch(function(){toast("השמירה בענן נכשלה")})}
+function pushCfg(){var j=JSON.stringify(cfg);if(j===lastCfg)return;lastCfg=j;pending=null;rSet('cfg',j)}
+function busy(){var a=document.activeElement;return !!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))}
+function applyCfg(v,quiet){
+ var oldId=(sel!=='g'&&sel!=='code'&&sel)?sel.id:null;
+ lastCfg=v;pending=null;cfg=JSON.parse(v);
+ if(oldId!==null){var f=cfg.extensions.filter(function(e){return e.id===oldId})[0];sel=f||'g'}
+ gen();main();
+ if($("dlg").open)$("dlg").close();
+ if(!quiet)toast("עודכן על ידי משתמש אחר")}
+document.addEventListener('focusout',function(){setTimeout(function(){if(pending&&!busy())applyCfg(pending)},60)});
+(function(){
+ if(!window.YSync)return;
+ YSync.ready.then(function(ok){
+  if(!ok)return;
+  var f1=true,f2=true,f3=true;
+  YSync.onValue('yemot/cfg',function(v){
+   if(f1){f1=false;
+    if(v==null){syncOn=true;if(hadLocal){lastCfg='';pushCfg()}return}
+    syncOn=true;if(v===JSON.stringify(cfg)){lastCfg=v;return}
+    try{applyCfg(v,true);toast("נטענה הגרסה המשותפת")}catch(z){}return}
+   if(v==null||v===lastCfg)return;
+   if(busy()){pending=v;return}
+   try{applyCfg(v)}catch(z){}});
+  YSync.onValue('yemot/base',function(v){
+   if(f2){f2=false;if(v==null){if(BASE!==null&&BASE!=='')rSet('base',BASE);return}}
+   if(v==null||v===BASE)return;
+   BASE=v;lss('yemotBase',v);upd();side()});
+  YSync.onValue('yemot/hist',function(v){
+   if(f3){f3=false;if(v==null){var h=lsg('yemotHist');if(h)rSet('hist',h);return}}
+   if(v!=null)lss('yemotHist',v)});
+ });
+})();
 </script></body></html>

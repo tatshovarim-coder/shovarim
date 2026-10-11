@@ -232,6 +232,8 @@ textarea.in{min-height:84px;resize:vertical}
 <div id="toast"></div>
 <div class="overlay" id="drop">שחררו כאן כדי לייבא אנשי קשר</div>
 <script src="site.js"></script>
+<script src="firebase-config.js"></script>
+<script src="sync.js"></script>
 <script>
 (function(){
 'use strict';
@@ -304,6 +306,7 @@ function load(){
   var lim=Date.now()-30*864e5;S.contacts=S.contacts.filter(function(c){return !c.deleted||c.deleted>lim});
 }
 function save(){
+  pushRemote();
   try{localStorage.setItem(KEY,JSON.stringify({contacts:S.contacts,groups:S.groups,sortBy:S.sortBy}))}
   catch(e){toast('לא ניתן לשמור: האחסון בדפדפן מלא. מומלץ לייצא גיבוי ולהסיר תמונות.')}
 }
@@ -771,6 +774,44 @@ $('side').addEventListener('dblclick',function(e){var v=e.target.closest('[data-
 load();
 if(!S.contacts.length&&!localStorage.getItem(KEY)){/* empty start */}
 renderAll();
+
+/* ---------- Firebase sync (שיתוף בין כל המשתמשים) ---------- */
+var remoteReady=false,lastRemote={},lastGroups='[]';
+function pushRemote(){
+  if(!remoteReady)return;
+  var up={},now={},n=0;
+  S.contacts.forEach(function(c){now[c.id]=1;var j=JSON.stringify(c);if(lastRemote[c.id]!==j){up['items/'+c.id]=JSON.parse(j);lastRemote[c.id]=j;n++}});
+  Object.keys(lastRemote).forEach(function(id){if(!now[id]){up['items/'+id]=null;delete lastRemote[id];n++}});
+  var gj=JSON.stringify(S.groups);
+  if(gj!==lastGroups){up['groups']=S.groups.length?JSON.parse(gj):null;lastGroups=gj;n++}
+  if(n)YSync.update('contacts',up).catch(function(){toast('השמירה בענן נכשלה')});
+}
+function startSync(){
+  if(!window.YSync)return;
+  YSync.ready.then(function(ok){
+    if(!ok)return;
+    var first=true;
+    YSync.onValue('contacts',function(d){
+      d=d||{};
+      var items=d.items||{},ids=Object.keys(items);
+      if(first){
+        first=false;
+        /* ענן ריק + יש נתונים מקומיים: מעלים אותם (העלאה ראשונה) */
+        if(!ids.length&&!d.groups&&(S.contacts.length||S.groups.length)){remoteReady=true;lastRemote={};lastGroups='';pushRemote();return}
+      }
+      var arr=ids.map(function(k){return fixC(items[k])});
+      lastRemote={};arr.forEach(function(x){lastRemote[x.id]=JSON.stringify(x)});
+      var g=d.groups||[];if(!Array.isArray(g))g=Object.keys(g).map(function(k){return g[k]});
+      lastGroups=JSON.stringify(g);
+      var lim=Date.now()-30*864e5;
+      S.contacts=arr.filter(function(x){return !x.deleted||x.deleted>lim});S.groups=g;
+      remoteReady=true;
+      try{localStorage.setItem(KEY,JSON.stringify({contacts:S.contacts,groups:S.groups,sortBy:S.sortBy}))}catch(e){}
+      renderAll();
+    });
+  });
+}
+startSync();
 window.addEventListener('storage',function(e){if(e.key===KEY){load();renderAll()}});
 })();
 </script>
