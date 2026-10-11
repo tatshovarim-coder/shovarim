@@ -149,6 +149,33 @@ dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;display:none;z-index:99;box-shadow:0 10px 30px #0f172a44;animation:toastIn .3s cubic-bezier(.2,.9,.3,1.2)}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,16px)}}
 
+/* ---------- עזרה: איך עובדים ---------- */
+.hd{width:min(700px,94vw);max-height:90vh;overflow:auto}
+.hd h2{margin:0 0 4px;font-size:21px}.hd .sub{margin:0 0 6px;color:var(--mut)}
+.grp{margin:20px 0 12px;font-size:16px;color:var(--ac2);font-weight:700;border-bottom:2px solid var(--acs);padding-bottom:4px}
+.st{list-style:none;margin:0;padding:0;counter-reset:s}
+.st li{counter-increment:s;position:relative;padding:0 50px 18px 0}
+.st li:before{content:counter(s);position:absolute;right:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-weight:700}
+.st li:after{content:"";position:absolute;right:16px;top:38px;bottom:4px;width:2px;background:var(--line)}
+.st li:last-child{padding-bottom:4px}.st li:last-child:after{display:none}
+.st b{display:block;font-size:16px;margin-bottom:2px}.st p{margin:0;color:#334155}
+kbd{background:#eef2f7;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;font:13px Consolas,monospace;direction:ltr;display:inline-block}
+.tip{background:var(--acs);border-radius:10px;padding:10px 14px;margin:8px 0 0;font-size:14px;color:#1e3a8a}
+.warn{background:#fff4e5;border-radius:10px;padding:10px 14px;margin:8px 0 0;font-size:14px;color:#8a4b00}
+.cb{direction:ltr;text-align:left;background:#0f172a;color:#dbe4f0;border-radius:8px;padding:8px 12px;margin:8px 0 0;font:13px/1.6 Consolas,monospace;user-select:all}
+.hd table{border-collapse:collapse;width:100%;font-size:14px}.hd td{border-top:1px solid var(--line);padding:7px 6px;vertical-align:top}.hd td:first-child{font-weight:700;white-space:nowrap}
+.hw{position:relative;z-index:30;display:inline-block}
+.hbtn.pulse{background:#f59e0b;color:#1e293b;font-weight:700;border-color:transparent;box-shadow:0 0 0 4px #fde68a,0 8px 22px #f59e0b66}
+.hbtn.pulse svg{color:#1e293b}
+.orbit:after{content:"?";position:absolute;top:-9px;left:-9px;width:22px;height:22px;border-radius:50%;background:#1e293b;color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center;box-shadow:0 0 0 2px #fff;pointer-events:none}
+#helpTip{position:absolute;top:calc(100% + 12px);left:0;width:250px;background:#1e293b;color:#fff;border-radius:10px;padding:10px 12px 10px 34px;font-size:14px;line-height:1.4;cursor:pointer;box-shadow:0 8px 24px #0f172a40;animation:pop .5s ease-out .6s backwards}
+#helpTip:before{content:"";position:absolute;top:-6px;left:40px;width:12px;height:12px;background:#1e293b;transform:rotate(45deg);border-radius:2px}
+#helpTip b{display:block}
+#helpTip i{position:absolute;left:8px;top:6px;font-style:normal;width:22px;height:22px;line-height:20px;text-align:center;border-radius:50%;background:#ffffff30}
+#helpTip i:hover{background:#ffffff55}
+@keyframes pop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#helpTip{animation:none}}
+
 /* ---------- מסכים צרים ---------- */
 @media(max-width:900px){
   .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
@@ -171,6 +198,7 @@ dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
   <span class="saved" id="saved">✓ נשמר אוטומטית</span>
   <span class="dirty" id="dirty"><i></i>שינויים שעוד לא הועתקו</span>
   <span class="sp"></span>
+  <span class="hw orbit"><button id="helpBtn" class="hbtn pulse" onclick="openHelp()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg><span>איך עובדים?</span></button><div id="helpTip" onclick="openHelp()"><i onclick="event.stopPropagation();hideTip(1)" title="סגירה">×</i><b>פעם ראשונה כאן?</b>לחצו לקבלת הסבר קצר, שלב אחרי שלב.</div></span>
   <a class="hbtn" href="https://script.google.com/u/0/home/projects/1_dhWawgaBBbYj67bjAcouNAAnLiM7LIJaU2wIplf4GUVwwRuzqwH7AZm/edit" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span>פתיחת הסקריפט</span></a>
   <button class="hbtn" onclick="openHist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg><span>גרסאות קודמות</span></button>
   <button class="hbtn" onclick="$('dlg').showModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg><span>טעינת קוד</span></button>
@@ -183,6 +211,52 @@ dialog::backdrop{background:#0f172a66;backdrop-filter:blur(3px)}
 <label class="l">או הדביקו את הקוד כאן</label><textarea id="paste" placeholder="הדביקו את הקוד מ‑Apps Script"></textarea>
 <div class="row"><button id="load">טען קוד</button><button class="s" id="demo">התחל מהתצורה הנוכחית</button><button class="s" onclick="$('dlg').close()">סגירה</button></div></dialog>
 <dialog id="dlgH"><div class="dh"><h2>חזרה לגרסה קודמת</h2></div><p class="hint" style="margin:0">נשמרת גרסה בכל העתקה, הורדה וטעינת קוד. לחיצה על "שחזור" מחליפה את העבודה הנוכחית (גם היא נשמרת, אפשר לחזור אליה).</p><div class="vlist" id="vlist"></div><div class="tb" style="justify-content:flex-end"><button class="s" onclick="$('dlgH').close()">סגירה</button></div></dialog>
+<dialog id="help" class="hd" onclick="if(event.target===this)this.close()">
+<div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><h2>איך עובדים עם הכלי – שלב אחרי שלב</h2><p class="sub">פשוט כמו לבנות עם לגו: מעתיקים, משנים, מדביקים. בסוף לא שוכחים את שלב ה"פריסה".</p></div><button class="hbtn" onclick="$('help').close()">סגירה</button></div>
+
+<div class="grp">חלק א: לוקחים את הקוד שיש היום</div>
+<ol class="st">
+<li><b>פותחים את הסקריפט</b><p>למעלה יש כפתור <b style="display:inline">"פתיחת הסקריפט"</b>. לוחצים עליו ונפתח דף של Google. שם גר הקוד.</p></li>
+<li><b>מעתיקים את הקוד הישן</b><p>לוחצים בתוך הקוד, ואז <kbd>Ctrl</kbd>+<kbd>A</kbd> (בוחר הכול) ואחריו <kbd>Ctrl</kbd>+<kbd>C</kbd> (מעתיק). זה כמו לצלם את הקוד.</p></li>
+<li><b>מדביקים בכלי</b><p>חוזרים לכאן, לוחצים <b style="display:inline">"טעינת קוד"</b>, מדביקים עם <kbd>Ctrl</kbd>+<kbd>V</kbd> ולוחצים <b style="display:inline">"טען קוד"</b>. הכלי קורא את הקוד ומסדר אותו ברשימה בצד.</p>
+<div class="tip">העבודה נשמרת אוטומטית ומשותפת לכל מי שפותח את הכלי. אם כבר טענת קוד ולא שינית אותו בסקריפט, אפשר לדלג על חלק א.</div></li>
+</ol>
+
+<div class="grp">חלק ב: עושים את השינויים</div>
+<ol class="st">
+<li><b>בוחרים שלוחה, או מוסיפים חדשה</b><p>ברשימה בצד לוחצים על שלוחה כדי לערוך אותה. לשלוחה חדשה לוחצים <b style="display:inline">"+ שלוחה חדשה"</b>. אם היא דומה לאחת הקיימות, עדיף <b style="display:inline">"שכפול שלוחה"</b>, ואז רק משנים את מה שצריך.</p></li>
+<li><b>ממלאים את הפרטים</b><p>מספר שלוחה, שם החנות (יופיע בנושא המייל), לאיזה מייל לשלוח, ומה לכתוב בשורת הזכאות. אם יש סניפים, לוחצים <b style="display:inline">"+ הוספת סניף"</b> ורושמים אותם לפי הסדר: הראשון הוא מקש 1, השני מקש 2, וכך הלאה (עד 9 סניפים).</p>
+<div class="warn">מספר השלוחה חייב להיות זהה בדיוק לשם השלוחה במערכת הטלפונית. <b>02</b> זה לא <b>2</b>!</div></li>
+<li><b>בוחרים איך יישמע תפריט הסיום</b><p>או מקובץ הקלטה בשם <b style="display:inline">000.wav</b> שמעלים לשלוחה (מומלץ), או הקראה מטקסט (בטקסט אסור נקודה ומקף).</p></li>
+<li><b>בודקים שהכול תקין</b><p>בתפריט בצד לוחצים <b style="display:inline">"הקוד המוכן"</b>. אם כתוב <b style="display:inline">"✓ הקוד תקין"</b>, אפשר להמשיך. אם יש שורה אדומה, מתקנים לפי מה שכתוב בה.</p></li>
+</ol>
+
+<div class="grp">חלק ג: מעלים לסקריפט</div>
+<ol class="st">
+<li><b>מעתיקים את הקוד החדש</b><p>לוחצים <b style="display:inline">"העתקת הקוד"</b> (הכפתור נמצא למעלה בכל מסך). תופיע ההודעה "הקוד הועתק".</p>
+<div class="tip">אם התחרטת, <b style="display:inline">"גרסאות קודמות"</b> מאפשר לחזור לגרסה שנשמרה קודם.</div></li>
+<li><b>מדביקים במקום הישן</b><p>חוזרים לדף הסקריפט, לוחצים בתוך הקוד, <kbd>Ctrl</kbd>+<kbd>A</kbd> ואז <kbd>Ctrl</kbd>+<kbd>V</kbd>. הקוד החדש מחליף את הישן. אחר כך לוחצים על סמל הדיסקט (שמירה) או <kbd>Ctrl</kbd>+<kbd>S</kbd>.</p></li>
+<li><b>עושים פריסה – השלב הכי חשוב!</b><p>בלי זה השינוי לא נכנס לתוקף. למעלה בדף הסקריפט: <b style="display:inline">פריסה</b> ← <b style="display:inline">ניהול פריסות</b> ← סמל העיפרון ✏ ← בשדה "גרסה" בוחרים <b style="display:inline">גרסה חדשה</b> ← <b style="display:inline">פריסה</b>.</p>
+<div class="tip">הכתובת של הסקריפט נשארת אותה כתובת, ולכן אין צורך לשנות כלום בימות המשיח או ב‑Worker.</div></li>
+</ol>
+
+<div class="grp">חלק ד: בימות המשיח (רק כשמוסיפים שלוחה חדשה)</div>
+<ol class="st">
+<li><b>יוצרים את השלוחה במערכת</b><p>פותחים שלוחה חדשה, בשם המספר שרשמת בכלי. בקובץ ההגדרות שלה כותבים:</p>
+<div class="cb">type=api<br>api_link=https://shovarim.tat-shovarim.workers.dev/<br>api_hangup_send=no</div></li>
+<li><b>מעלים את הקלטת תפריט הסיום</b><p>אם בחרת "קובץ 000.wav", מעלים אותו לתוך השלוחה, בשם הזה בדיוק.</p></li>
+<li><b>מתקשרים ובודקים</b><p>מתקשרים לשלוחה ובודקים שלושה דברים: שהתפריט נשמע, שהמייל הגיע, ושהקשה על 2 מנתקת את השיחה.</p></li>
+</ol>
+
+<div class="grp">אם משהו לא עובד</div>
+<table>
+<tr><td>"השלוחה אינה מורשית"</td><td>המספר בכלי לא זהה למספר השלוחה במערכת (למשל 2 במקום 02), או שלא עשית פריסה של גרסה חדשה.</td></tr>
+<tr><td>"אין מענה משרת API"</td><td>בדוק שעשית פריסה של גרסה חדשה, ושקובץ 000.wav קיים בשלוחה (אם בחרת בו).</td></tr>
+<tr><td>"שגיאה בשליחת המייל"</td><td>כתובת המייל בכלי שגויה, או שחסרה הרשאה לשליחת מייל בסקריפט.</td></tr>
+<tr><td>המייל לא הגיע</td><td>בדוק שכתובת המייל בכלי נכונה, ושהמייל לא נפל לספאם.</td></tr>
+<tr><td>תפריט הסיום לא נשמע</td><td>הקובץ חסר או בשם אחר מ‑000.wav, או שהוא לא בתוך השלוחה הנכונה.</td></tr>
+</table>
+</dialog>
 <div id="toast"></div>
 <script src="site.js"></script>
 <script src="firebase-config.js"></script>
@@ -202,15 +276,27 @@ function out(t) {
 function handleRequest(e) {
   if (!e || !e.parameter) return out("Error: No parameters provided.");
 
-  // נרמול: אם מגיע "/02" או "/x/02" לוקחים רק את החלק האחרון
-  var apiExtension = String(e.parameter.ApiExtension || "").replace(/^.*\//, "");
+  // נרמול: מורידים סלאשים מההתחלה ומהסוף. שלוחה רגילה מזוהה לפי החלק האחרון בנתיב,
+  // ושלוחה בתוך שלוחה (nested) מזוהה לפי הנתיב המלא, למשל 2/3
+  var fullPath = String(e.parameter.ApiExtension || "").replace(/^\/+|\/+$/g, "");
+  var apiExtension = fullPath.replace(/^.*\//, "");
   var apiPhone = e.parameter.ApiPhone || "לא זוהה מספר";
   var apiCallId = e.parameter.ApiCallId || "לא צורף מזהה";
   var apiName = e.parameter.ApiEnterIDName || "";
 
-  var ext = null;
+  var ext = null, nestedByLast = [];
   for (var k = 0; k < CONFIG.extensions.length; k++) {
-    if (String(CONFIG.extensions[k].id) === apiExtension) ext = CONFIG.extensions[k];
+    var cur = CONFIG.extensions[k], curId = String(cur.id).replace(/^\/+|\/+$/g, "");
+    if (cur.nested) {
+      if (curId === fullPath) ext = cur;
+      else if (curId.replace(/^.*\//, "") === apiExtension) nestedByLast.push(cur);
+    } else if (curId === apiExtension) ext = cur;
+  }
+  // אם ימות המשיח שלחה רק את שם השלוחה האחרון, מתאימים לשלוחה מקוננת רק אם אין אי-בהירות
+  if (!ext && nestedByLast.length === 1) ext = nestedByLast[0];
+  if (ext && ext.nested) {
+    console.log("ApiExtension=" + e.parameter.ApiExtension + " -> " + ext.id);
+    apiExtension = String(ext.id).replace(/^\/+|\/+$/g, "");
   }
   if (!ext) return out("id_list_message=t-השלוחה אינה מורשית&go_to_folder=hangup");
 
@@ -362,7 +448,7 @@ function hebGematria(num) {
 </script>
 <script>
 var MENU="העיסקה אושרה ונשלח אישור במייל למוכר אנא פנה למוכר למימוש ההטבה לשמיעת ההודעה שוב הקש 1 לסיום העיסקה וניתוק השיחה הקש 2 באם המוכר לא קיבל אישור ולמעבר לנציג הקש 3";
-function ext(id,store,email,el,br){return{id:id,store:store,email:email,eligibility:el,note:"",audio:true,menuText:MENU,transfer:"/3",branches:br||[]}}
+function ext(id,store,email,el,br){return{id:id,store:store,email:email,eligibility:el,note:"",audio:true,menuText:MENU,transfer:"/3",nested:false,branches:br||[]}}
 function demo(){return{copyEmail:"tat.shovarim@gmail.com",heading:"אישור רכישת שובר",suffix:'ת"ת גרודנא',footer:'ת"ת ישיבת גרודנא - באר יעקב',
 extensions:[ext("19","מנטור","9231GH@GMAIL.COM","אישור תשלום לשובר",["בני ברק","ירושלים","בית שמש"]),ext("02","בגיר","9231GH@GMAIL.COM","אישור לשובר בסיס לחליפת בגיר")]}}
 var cfg=demo(),$=function(i){return document.getElementById(i)};
@@ -413,6 +499,8 @@ function hdr(){var b=document.querySelector('.bigid');if(!b)return;b.textContent
 function srt(){cfg.extensions.sort(function(a,b){var x=parseInt(a.id,10),y=parseInt(b.id,10);if(isNaN(x))x=1e9;if(isNaN(y))y=1e9;return x-y||String(a.id).localeCompare(String(b.id))})}
 function errors(){var er=[],seen={};cfg.extensions.forEach(function(e,i){var n="שלוחה "+(e.id||"#"+(i+1));
  if(!e.id)er.push(n+": חסר מספר שלוחה");else if(seen[e.id])er.push(n+": מספר שלוחה כפול");seen[e.id]=1;
+ if(e.id&&e.nested&&String(e.id).replace(/^\/+|\/+$/g,"").indexOf("/")<0)er.push(n+": שלוחה בתוך שלוחה דורשת נתיב עם / (למשל 2/3)");
+ if(e.id&&!e.nested&&/\//.test(e.id))er.push(n+": יש / במספר השלוחה – סמנו 'שלוחה בתוך שלוחה'");
  if(!e.store)er.push(n+": חסר שם חנות");if(!e.email)er.push(n+": חסר מייל נמען");
  if(e.branches.length>9)er.push(n+": מותרים עד 9 סניפים");if(e.branches.some(function(b){return!b.trim()}))er.push(n+": יש סניף ריק");
  if(!e.audio&&/[.\-]/.test(e.menuText))er.push(n+": בטקסט התפריט אסור נקודה או מקף")});return er}
@@ -430,6 +518,7 @@ function S(k,v){sel[k]=v;if(k==='id'||k==='store'){side();hdr()}pv();gen()}
 function B(j,v){sel.branches[j]=v;pv();gen()}
 function ab(){sel.branches.push("");main();gen();var i=document.querySelectorAll('.br input');i[i.length-1].focus()}
 function rb(j){sel.branches.splice(j,1);main();gen()}
+function setNested(v){sel.nested=v;main();gen()}
 function setAudio(v){sel.audio=v;main();gen()}
 function fld(o,k,l,fn,h){return '<div><label class="l">'+l+'</label><input type="text" value="'+esc(o[k])+'" oninput="'+fn+'(\''+k+'\',this.value)">'+(h?'<span class="fh">'+h+'</span>':'')+'</div>'}
 function main(){var m=$("main"),h;
@@ -446,8 +535,8 @@ function main(){var m=$("main"),h;
  else{var e=sel;
   var br=e.branches.map(function(n,j){return '<div class="br"><b>'+(j+1)+'</b><input type="text" placeholder="שם הסניף" value="'+esc(n)+'" oninput="B('+j+',this.value)"><button class="d" onclick="rb('+j+')">הסר</button></div>'}).join('');
   h='<div class="wrap"><div class="ph"><div class="bigid">'+esc(e.id||'?')+'</div><div class="grow"><h2>שלוחה '+esc(e.id||'חדשה')+'</h2><p class="sub">'+esc(e.store||'עריכת פרטי השלוחה')+'</p></div><button class="s" onclick="dupExt()">שכפול שלוחה</button><button class="d" onclick="delExt()">מחיקת שלוחה</button></div><div class="cols"><div>'+
-   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="g f">'+fld(e,"id","מספר שלוחה","S","למשל 02")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
-   '<div class="g" style="margin-top:14px">'+fld(e,"eligibility","טקסט זכאות במייל","S")+fld(e,"note","הערה בגוף המייל (לא חובה)","S")+'</div></div>'+
+   '<div class="card"><h3>פרטים ומייל</h3><p class="hint">הפרטים שמופיעים בנושא המייל ובתוכנו.</p><div class="g f">'+fld(e,"id","מספר שלוחה","S",e.nested?"נתיב מלא, למשל 2/3":"למשל 02")+fld(e,"store","שם החנות (בנושא)","S")+fld(e,"email","מייל נמען (כמה – בפסיק)","S")+'</div>'+
+   '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer"><input type="checkbox"'+(e.nested?' checked':'')+' onchange="setNested(this.checked)"> שלוחה בתוך שלוחה (הנתיב המלא, למשל 2/3)</label>'+(e.nested?'<p class="hint" style="margin:6px 0 0">בשלוחה כזו כותבים את הנתיב המלא במספר השלוחה. בכל שיחה נרשם בלוג של Apps Script מה ימות המשיח שלחה (ביצועים ← ApiExtension).</p>':'')+'<div class="g" style="margin-top:14px">'+fld(e,"eligibility","טקסט זכאות במייל","S")+fld(e,"note","הערה בגוף המייל (לא חובה)","S")+'</div></div>'+
    '<div class="card"><h3>בחירת סניף</h3><p class="hint">'+(e.branches.length?'הלקוח מקיש את מספר הסניף לפני שליחת המייל.':'אפשר להוסיף סניפים כדי שהלקוח יבחר לפני שליחת המייל.')+'</p>'+br+(e.branches.length?'':'<div class="emptyb">אין סניפים. המייל נשלח מיד.</div>')+'<button class="s" onclick="ab()">+ הוספת סניף</button></div>'+
    '<div class="card"><h3>תפריט סיום</h3><p class="hint">מה שהלקוח שומע אחרי שהמייל נשלח.</p><div class="seg"><button class="'+(e.audio?'on':'')+'" onclick="setAudio(true)">קובץ 000.wav בשלוחה</button><button class="'+(e.audio?'':'on')+'" onclick="setAudio(false)">טקסט מהקוד</button></div>'+
    (e.audio?'':'<div style="margin-bottom:12px"><label class="l">טקסט התפריט (בלי נקודה ובלי מקף)</label><textarea oninput="S(\'menuText\',this.value)">'+esc(e.menuText)+'</textarea></div>')+
@@ -485,6 +574,10 @@ $("drop").ondragover=function(e){e.preventDefault();this.classList.add("on")};$(
 $("drop").ondrop=function(e){e.preventDefault();this.classList.remove("on");if(e.dataTransfer.files[0])rf(e.dataTransfer.files[0])};
 var sv=null;try{sv=JSON.parse(localStorage.getItem('yemotCfg')||'null')}catch(z){}
 if(sv&&sv.extensions&&sv.extensions.length){cfg=sv;gen();var b0=lsg('yemotBase');BASE=b0===null?'':b0;upd();side();main();toast("נטענה העבודה האחרונה שלך")}else{gen();BASE=CODE;upd();main();$("dlg").showModal()}
+function stopAnim(){var b=$("helpBtn"),w=document.querySelector(".hw");if(b)b.classList.remove("pulse");if(w)w.classList.remove("orbit")}
+function hideTip(save){var t=$("helpTip");if(t)t.style.display="none";if(save)lss('yemotHelpSeen','1')}
+function openHelp(){hideTip(1);stopAnim();$("help").showModal()}
+if(lsg('yemotHelpSeen')==='1'){hideTip();stopAnim()}
 ready=true;
 
 /* ---------- Firebase sync (שיתוף בין כל המשתמשים) ---------- */

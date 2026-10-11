@@ -5,7 +5,7 @@
   var configured = !!(cfg.apiKey && cfg.databaseURL) && String(cfg.apiKey).indexOf('PASTE') < 0 && String(cfg.databaseURL).indexOf('PASTE') < 0;
   var needLogin = !!window.FIREBASE_REQUIRE_LOGIN;
   var V = '10.12.2', BASE = 'https://www.gstatic.com/firebasejs/' + V + '/';
-  var db = null, badge = null;
+  var db = null;
 
   function load(src) {
     return new Promise(function (res, rej) {
@@ -14,19 +14,6 @@
       s.onerror = function () { rej(new Error('load failed: ' + src)); };
       document.head.appendChild(s);
     });
-  }
-
-  function mkBadge() {
-    badge = document.createElement('div');
-    badge.setAttribute('dir', 'rtl');
-    badge.style.cssText = 'position:fixed;bottom:12px;left:12px;z-index:998;font:500 12px Heebo,Arial,sans-serif;background:#fff;color:#64748b;border:1px solid #e2e8f0;border-radius:99px;padding:4px 12px;box-shadow:0 4px 12px #0f172a14;display:flex;align-items:center;gap:6px;pointer-events:none';
-    badge.innerHTML = '<i style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block"></i><span>מתחבר…</span>';
-    document.body.appendChild(badge);
-  }
-  function setBadge(ok) {
-    if (!badge) return;
-    badge.firstChild.style.background = ok ? '#16a34a' : '#f59e0b';
-    badge.lastChild.textContent = ok ? 'מסונכרן' : 'לא מחובר – שומר מקומית';
   }
 
   function loginGate() {
@@ -64,14 +51,6 @@
       .then(function () { return load(BASE + 'firebase-database-compat.js'); })
       .then(function () { return needLogin ? load(BASE + 'firebase-auth-compat.js') : 0; })
       .then(function () { firebase.initializeApp(cfg); db = firebase.database(); return needLogin ? loginGate() : true; })
-      .then(function (ok) {
-        var start = function () {
-          mkBadge();
-          db.ref('.info/connected').on('value', function (s) { setBadge(!!s.val()); });
-        };
-        if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
-        return ok;
-      })
       .catch(function (e) { console.warn('Firebase sync disabled:', e); return false; });
   }
 
