@@ -218,7 +218,7 @@ dialog::backdrop{background:#0f172a80;backdrop-filter:blur(3px)}
   <div class="sw"><span>מיון</span><select id="sSort"><option value="updated">לפי עדכון אחרון</option><option value="created">לפי תאריך יצירה</option><option value="title">לפי כותרת</option><option value="color">לפי צבע</option><option value="remind">לפי תזכורת</option></select></div>
   <div class="sw"><div>העברת פריטים מסומנים לסוף הרשימה<small>ברשימות סימון</small></div><label class="tg"><input type="checkbox" id="sMove"><i></i></label></div>
   <div class="sw"><div>פריט חדש ברשימה מתווסף למעלה<small>במקום לתחתית</small></div><label class="tg"><input type="checkbox" id="sTop"><i></i></label></div>
-  <div class="sw"><div>סנכרון בין מכשירים (ענן)<small>הפתקים נשמרים ב-Firebase של האתר</small></div><label class="tg"><input type="checkbox" id="sSync"><i></i></label></div>
+  <div class="sw"><div>סנכרון בין כולם (ענן)<small>הפתקים נשמרים ב-Firebase ומשותפים לכל מי שפותח את הכלי</small></div><label class="tg"><input type="checkbox" id="sSync"><i></i></label></div>
   <div class="warn" id="syncWarn" hidden>שימו לב: מסד הנתונים של האתר פתוח לכל מי שיש לו את הקישור. פתקים רגישים כדאי לנעול בסיסמה, ואז הם נשמרים מוצפנים גם בענן.</div>
   <div class="sw"><span>גיבוי</span><div class="row"><button class="btn" data-a="export">ייצוא לקובץ</button><button class="btn" data-a="import">ייבוא</button></div></div>
   <div class="sw"><span>התראות בדפדפן לתזכורות</span><button class="btn" data-a="notifperm" id="notifBtn">הפעלה</button></div>
@@ -293,7 +293,7 @@ function kvSet(k,v){return new Promise(function(res){
  try{localStorage.setItem('notes_'+k,JSON.stringify(v));res(true)}catch(e){toast('אין מספיק מקום לשמירה מקומית');res(false)}})}
 
 /* ================= מצב ================= */
-var S={notes:[],set:{view:'grid',theme:'auto',sort:'updated',fs:1,moveDone:true,addTop:false,sync:false,labels:[]}};
+var S={notes:[],set:{view:'grid',theme:'auto',sort:'updated',fs:1,moveDone:true,addTop:false,sync:true,labels:[],v:2}};
 var UI={nav:'notes',q:'',ftype:'',fcolor:'',fimg:false,frem:false,sel:{}};
 var COLORS=[['c0','ללא צבע'],['c1','אדום'],['c2','כתום'],['c3','צהוב'],['c4','ירוק'],['c5','טורקיז'],['c6','כחול'],['c7','סגול'],['c8','ורוד'],['c9','אפור']];
 var CONTENT=['body','items','imgs','draw'];
@@ -309,7 +309,7 @@ async function ser(n){var o=clone(Object.assign({},n,{_k:undefined}));delete o._
 function save(){clearTimeout(saveT);saveT=setTimeout(async function(){var arr=[];for(var i=0;i<S.notes.length;i++)arr.push(await ser(S.notes[i]));await kvSet('notes',arr);await kvSet('set',S.set)},350)}
 function touch(n){n.updated=Date.now();save();push(n)}
 async function load(){await idbOpen();var a=await kvGet('notes'),s=await kvGet('set');
- if(s)Object.assign(S.set,s);S.notes=(a||[]).map(norm)}
+ if(s){Object.assign(S.set,s);if(!s.v||s.v<2){S.set.sync=true;S.set.v=2;save()}}S.notes=(a||[]).map(norm)}
 
 /* ================= ניקוי HTML ================= */
 var OK={B:1,STRONG:1,I:1,EM:1,U:1,S:1,STRIKE:1,DEL:1,H1:1,H2:1,H3:1,P:1,DIV:1,BR:1,UL:1,OL:1,LI:1,A:1,MARK:1,SPAN:1,BLOCKQUOTE:1,CODE:1,PRE:1};
@@ -594,7 +594,8 @@ async function shareNote(n){var t=fullText(n);if(navigator.share){try{await navi
 
 /* ================= סנכרון ================= */
 var syncing=false,applyingRemote=false;
-function push(n){if(!S.set.sync||!syncing||!window.YSync||applyingRemote)return;ser(n).then(function(o){YSync.set('notes/items/'+n.id,o).catch(function(){})})}
+function push(n){if(!S.set.sync||!syncing||!window.YSync||applyingRemote)return;ser(n).then(function(o){YSync.set('notes/items/'+n.id,o).catch(function(){syncFail()})})}
+var failT=0;function syncFail(){if(Date.now()-failT<20000)return;failT=Date.now();toast('השמירה בענן נכשלה. בדקו את כללי ההרשאות ב-Firebase לנתיב notes')}
 function pushAll(){S.notes.forEach(push)}
 function startSync(){if(syncing||!window.YSync)return;YSync.ready.then(function(ok){if(!ok){toast('אין חיבור לענן, הפתקים נשמרים רק בדפדפן');return}
  syncing=true;YSync.onValue('notes/items',function(remote){if(!S.set.sync)return;mergeRemote(remote||{})});pushAll()})}
