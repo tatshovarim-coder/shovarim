@@ -300,16 +300,31 @@ function byId(id){for(var i=0;i<S.contacts.length;i++)if(S.contacts[i].id===id)r
 function blank(){return{id:uid(),first:'',last:'',company:'',jobTitle:'',phones:[],emails:[],address:'',website:'',notes:'',fav:false,groups:[],photo:'',created:Date.now(),updated:Date.now()}}
 function fixC(c){var b=blank();for(var k in b)if(c[k]==null)c[k]=b[k];c.phones=(c.phones||[]).filter(function(p){return p&&p.value});c.emails=(c.emails||[]).filter(function(p){return p&&p.value});c.groups=c.groups||[];return c}
 
-/* ---------- storage ---------- */
-function load(){
-  try{var d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){S.contacts=(d.contacts||[]).map(fixC);S.groups=d.groups||[];S.sortBy=d.sortBy||'first'}}catch(e){}
-  var lim=Date.now()-30*864e5;S.contacts=S.contacts.filter(function(c){return !c.deleted||c.deleted>lim});
-}
-function save(){
-  pushRemote();
-  try{localStorage.setItem(KEY,JSON.stringify({contacts:S.contacts,groups:S.groups,sortBy:S.sortBy}))}
-  catch(e){toast('לא ניתן לשמור: האחסון בדפדפן מלא. מומלץ לייצא גיבוי ולהסיר תמונות.')}
-}
+/* ---------- storage: IndexedDB (מקום גדול), עם גיבוי ל-localStorage ---------- */
+var idb=null,bc=null,migrating=false;
+try{bc=new BroadcastChannel('contactsSync')}catch(e){}
+function idbOpen(cb){var done=false;function fin(){if(!done){done=true;cb()}}
+  try{var r=indexedDB.open('contactsDB',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};
+    r.onsuccess=function(){idb=r.result;fin()};r.onerror=fin;r.onblocked=fin}catch(e){fin()}}
+function idbGet(k,cb){if(!idb)return cb(undefined);
+  try{var q=idb.transaction('kv').objectStore('kv').get(k);q.onsuccess=function(){cb(q.result)};q.onerror=function(){cb(undefined)}}catch(e){cb(undefined)}}
+function idbPut(k,v,ok,fail){if(!idb)return fail();
+  try{var tx=idb.transaction('kv','readwrite');tx.objectStore('kv').put(v,k);tx.oncomplete=ok;tx.onerror=fail;tx.onabort=fail}catch(e){fail()}}
+function applyData(d){if(d){S.contacts=(d.contacts||[]).map(fixC);S.groups=d.groups||[];S.sortBy=d.sortBy||'first'}
+  var lim=Date.now()-30*864e5;S.contacts=S.contacts.filter(function(c){return !c.deleted||c.deleted>lim})}
+function load(cb){idbOpen(function(){idbGet(KEY,function(d){
+  if(!d){/* מעבר חד-פעמי מהאחסון הישן */
+    try{var old=JSON.parse(localStorage.getItem(KEY)||'null');if(old){d=old;migrating=true}}catch(e){}}
+  applyData(d);if(migrating)persist();
+  setTimeout(cb,0)})})}
+function persist(){var data={contacts:S.contacts,groups:S.groups,sortBy:S.sortBy};
+  idbPut(KEY,data,function(){
+    if(migrating){migrating=false;try{localStorage.removeItem(KEY)}catch(e){}}
+    if(bc)try{bc.postMessage('changed')}catch(e){}
+  },function(){
+    try{localStorage.setItem(KEY,JSON.stringify(data))}
+    catch(e){toast('לא ניתן לשמור: האחסון בדפדפן מלא. מומלץ לייצא גיבוי ולהסיר תמונות.')}})}
+function save(){pushRemote();persist()}
 function snap(){undoSnap=JSON.stringify({c:S.contacts,g:S.groups})}
 function undo(){if(!undoSnap)return;var d=JSON.parse(undoSnap);S.contacts=d.c;S.groups=d.g;undoSnap=null;save();renderAll();toast('הפעולה בוטלה')}
 function done(msg){save();renderAll();toast(msg,'ביטול',undo)}
@@ -771,9 +786,7 @@ addEventListener('drop',function(e){e.preventDefault();dd=0;$('drop').classList.
 $('vt').addEventListener('dblclick',function(){if(S.view.indexOf('g:')===0)groupDialog(groupById(S.view.slice(2)))});
 $('side').addEventListener('dblclick',function(e){var v=e.target.closest('[data-view^="g:"]');if(v)groupDialog(groupById(v.dataset.view.slice(2)))});
 
-load();
-if(!S.contacts.length&&!localStorage.getItem(KEY)){/* empty start */}
-renderAll();
+load(function(){renderAll();startSync()});
 
 /* ---------- Firebase sync (שיתוף בין כל המשתמשים) ---------- */
 var remoteReady=false,lastRemote={},lastGroups='[]';
@@ -806,13 +819,12 @@ function startSync(){
       var lim=Date.now()-30*864e5;
       S.contacts=arr.filter(function(x){return !x.deleted||x.deleted>lim});S.groups=g;
       remoteReady=true;
-      try{localStorage.setItem(KEY,JSON.stringify({contacts:S.contacts,groups:S.groups,sortBy:S.sortBy}))}catch(e){}
+      persist();
       renderAll();
     });
   });
 }
-startSync();
-window.addEventListener('storage',function(e){if(e.key===KEY){load();renderAll()}});
+if(bc)bc.onmessage=function(){idbGet(KEY,function(d){if(d){applyData(d);renderAll()}})};
 })();
 </script>
 </body>
