@@ -338,20 +338,34 @@ function handleRequest(e) {
   if (userChoice === '2') return out("id_list_message=t-שלום ולהתראות&go_to_folder=hangup");
   if (userChoice === '3' && transferTo) return out("id_list_message=t-אנא המתן&go_to_folder=" + transferTo);
 
+  // מניעת שליחה כפולה: רק אותו מזהה שיחה לא יישלח פעמיים. שיחות שונות לא מחכות זו לזו.
+  // הנעילה נמשכת אלפיות שנייה בלבד (בדיקה וסימון), ולא בזמן שליחת המייל.
+  var cache = CacheService.getScriptCache();
+  var propertyKey = "processed_" + apiExtension + "_" + apiCallId;
+  var alreadySent = false;
   var lock = LockService.getScriptLock();
-  lock.waitLock(5000);
   try {
-    var cache = CacheService.getScriptCache();
-    var propertyKey = "processed_" + apiExtension + "_" + apiCallId;
-    if (cache.get(propertyKey)) return out(readMenu);
+    lock.waitLock(3000);
+    try {
+      if (cache.get(propertyKey)) alreadySent = true;
+      else cache.put(propertyKey, "true", 21600);
+    } finally {
+      lock.releaseLock();
+    }
+  } catch (lockError) {
+    // לא הצלחנו לנעול: ממשיכים בלי נעילה, ובודקים רק את הסימון
+    if (cache.get(propertyKey)) alreadySent = true;
+    else cache.put(propertyKey, "true", 21600);
+  }
+  if (alreadySent) return out(readMenu);
+
+  try {
     sendEmail(ext, apiPhone, branchName, apiName);
-    cache.put(propertyKey, "true", 21600);
     return out(readMenu);
   } catch (error) {
     console.error(error);
+    cache.remove(propertyKey); // השליחה נכשלה: מאפשרים ניסיון חוזר באותה שיחה
     return out("id_list_message=t-שגיאה בשליחת המייל&go_to_folder=hangup");
-  } finally {
-    lock.releaseLock();
   }
 }
 
