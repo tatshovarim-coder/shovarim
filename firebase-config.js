@@ -12,4 +12,4 @@ window.FIREBASE_CONFIG = {
 
 /* false = בלי סיסמה (כל מי שיש לו את הקישור יכול לקרוא ולכתוב).
    true  = נדרשת כניסה עם מייל וסיסמה (דורש הגדרה נוספת ב-Firebase). */
-window.FIREBASE_REQUIRE_LOGIN = false;
+window.FIREBASE_REQUIRE_LOGIN = true;
